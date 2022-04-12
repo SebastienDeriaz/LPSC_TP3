@@ -1,0 +1,8 @@
+# Ignore generated files
+<prj_name>.xsa
+<prj_name>.bit
+drivers
+*.c
+*.h
+*.tcl
+*.html

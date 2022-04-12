@@ -1,0 +1,5 @@
+setup.sh: Script used to source aliases allowing to manage the Vivado project (creation, deletion, bitstream loading, and so on...)
+
+.scripts: Contains scripts used by setup.sh
+
+.gitignore: Git ignore file template used to ignore the generated project directory
