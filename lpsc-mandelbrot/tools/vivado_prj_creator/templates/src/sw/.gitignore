@@ -1,0 +1,5 @@
+# Ignore generated software workspace directories
+*_workspace
+
+# Ignore temporary files
+*.bkp

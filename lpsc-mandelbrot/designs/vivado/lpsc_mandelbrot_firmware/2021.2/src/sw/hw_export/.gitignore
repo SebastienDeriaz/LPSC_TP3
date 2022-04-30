@@ -1,0 +1,8 @@
+# Ignore generated files
+lpsc_mandelbrot_firmware.xsa
+lpsc_mandelbrot_firmware.bit
+drivers
+*.c
+*.h
+*.tcl
+*.html
