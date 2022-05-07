@@ -40,8 +40,8 @@ use ieee.numeric_std.all;
 entity mandelbrot_iteration is
     generic (
         max_iter : integer := 100; -- Max number of iterations
-        m        : integer := 15;  -- Number of integer bits (with sign bit)
-        n        : integer := 3    -- Number of decimals bits
+        m        : integer := 3;   -- Number of integer bits (with sign bit)
+        n        : integer := 15   -- Number of decimals bits
     );
     port (
         clk            : in std_logic;
@@ -58,17 +58,28 @@ entity mandelbrot_iteration is
         Zr_next        : out signed(m + n - 1 downto 0);  -- Output imaginary part (after iteration)
         Zi_next        : out signed(m + n - 1 downto 0);  -- Output imaginary part (after iteration)
         iterations_out : out integer range 0 to max_iter; -- New number of iterations (+1 or +0 of iterations_in)
-        done_out       : out std_logic                    -- Done signal
+        done_out       : out std_logic                   -- Done signal
+        -- Debug
+        --debug_value    : out signed(m + n - 1 downto 0);
+        --debug_value_2  : out signed(2*m + n - 1 downto 0)
     );
 end mandelbrot_iteration;
 
-architecture Behavioral of mandelbrot_iteration is
+architecture MandelbrotIteration of mandelbrot_iteration is
     function signed_multiply(A : signed; B : signed) return signed is
-        variable result : signed(2*m + 2*n - 1 downto 0);
+        variable result : signed(2 * m + 2 * n - 1 downto 0);
     begin
         result := A * B;
         return signed(result(m + n + n - 1 downto n));
     end signed_multiply;
+
+    function signed_multiply_high(A : signed; B : signed) return signed is
+        variable result : signed(2 * m + 2 * n - 1 downto 0);
+    begin
+        result := A * B;
+        --return signed(result(2*m + 2*n - 1 downto n));
+        return result(2*m + 2*n - 1 downto n);
+    end signed_multiply_high;
 begin
 
     -- Synchronous process
@@ -86,10 +97,11 @@ begin
                 iterations_out <= iterations_in + 1;
 
                 Zr_new := signed_multiply(Zr_previous, Zr_previous) - signed_multiply(Zi_previous, Zi_previous) + Cr;
-                Zi_new := signed_multiply(signed_multiply(to_signed(2, m+n), Zr_previous), Zi_previous) + Ci;
+                Zi_new := signed_multiply(Zi_previous, Zr_previous) + signed_multiply(Zi_previous, Zr_previous) + Ci;
+                
 
                 -- Determine is the max number of iterations has been reached
-                if signed_multiply(Zr_new, Zr_new) + signed_multiply(Zi_new, Zi_new) >= signed_multiply(R, R) then
+                if signed_multiply_high(Zr_new, Zr_new) + signed_multiply_high(Zi_new, Zi_new) >= signed_multiply_high(R,R) then
                     -- The stopping radius has been reached
                     done_out <= '1';
                 else
@@ -97,6 +109,7 @@ begin
                     done_out <= '0';
                 end if;
             else
+                --debug_value    <= (others => 'U');
                 -- Nothing to do
                 iterations_out <= iterations_in;
 
@@ -112,4 +125,4 @@ begin
         Zr_next <= Zr_new;
         Zi_next <= Zi_new;
     end process;
-end Behavioral;
+end MandelbrotIteration;
