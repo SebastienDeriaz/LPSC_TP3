@@ -1,6 +1,8 @@
 # compile vhdl design source files
 vhdl2008 xil_defaultlib  \
 "../../../../LPSC_SD_Mandelbrot_evaluator.srcs/sources_1/new/mandelbrot_iteration.vhd" \
+"../../../../LPSC_SD_Mandelbrot_evaluator.srcs/sources_1/new/tb_mandelbrot_loop.vhd" \
+"../../../../LPSC_SD_Mandelbrot_evaluator.srcs/sources_1/new/mandelbrot_loop.vhd" \
 "../../../../LPSC_SD_Mandelbrot_evaluator.srcs/sources_1/new/tb_mandelbrot_iteration.vhd" \
 
 # Do not sort compile order

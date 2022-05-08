@@ -58,7 +58,7 @@ entity mandelbrot_iteration is
         Zr_next        : out signed(m + n - 1 downto 0);  -- Output imaginary part (after iteration)
         Zi_next        : out signed(m + n - 1 downto 0);  -- Output imaginary part (after iteration)
         iterations_out : out integer range 0 to max_iter; -- New number of iterations (+1 or +0 of iterations_in)
-        done_out       : out std_logic                   -- Done signal
+        done_out       : out std_logic                    -- Done signal
         -- Debug
         --debug_value    : out signed(m + n - 1 downto 0);
         --debug_value_2  : out signed(2*m + n - 1 downto 0)
@@ -78,7 +78,7 @@ architecture MandelbrotIteration of mandelbrot_iteration is
     begin
         result := A * B;
         --return signed(result(2*m + 2*n - 1 downto n));
-        return result(2*m + 2*n - 1 downto n);
+        return result(2 * m + 2 * n - 1 downto n);
     end signed_multiply_high;
 begin
 
@@ -92,24 +92,7 @@ begin
             Zi_new := (others => '0');
         elsif rising_edge(clk) then
             -- Check if the previous iteration had reached the stopping radius
-            if done_in = '0' then
-                -- We need to calculate a new value
-                iterations_out <= iterations_in + 1;
-
-                Zr_new := signed_multiply(Zr_previous, Zr_previous) - signed_multiply(Zi_previous, Zi_previous) + Cr;
-                Zi_new := signed_multiply(Zi_previous, Zr_previous) + signed_multiply(Zi_previous, Zr_previous) + Ci;
-                
-
-                -- Determine is the max number of iterations has been reached
-                if signed_multiply_high(Zr_new, Zr_new) + signed_multiply_high(Zi_new, Zi_new) >= signed_multiply_high(R,R) then
-                    -- The stopping radius has been reached
-                    done_out <= '1';
-                else
-                    -- Keep going
-                    done_out <= '0';
-                end if;
-            else
-                --debug_value    <= (others => 'U');
+            if iterations_in = max_iter or done_in = '1' then
                 -- Nothing to do
                 iterations_out <= iterations_in;
 
@@ -118,6 +101,20 @@ begin
                 -- The output signals are the same as the input
                 Zr_new := Zr_previous;
                 Zi_new := Zi_previous;
+            elsif done_in = '0' then
+                -- We need to calculate a new value
+                iterations_out <= iterations_in + 1;
+
+                Zr_new := signed_multiply(Zr_previous, Zr_previous) - signed_multiply(Zi_previous, Zi_previous) + Cr;
+                Zi_new := signed_multiply(Zi_previous, Zr_previous) + signed_multiply(Zi_previous, Zr_previous) + Ci;
+                -- Determine is the max number of iterations has been reached
+                if signed_multiply_high(Zr_new, Zr_new) + signed_multiply_high(Zi_new, Zi_new) >= signed_multiply_high(R, R) then
+                    -- The stopping radius or the max number of iterations has been reached
+                    done_out <= '1';
+                else
+                    -- Keep going
+                    done_out <= '0';
+                end if;
             end if;
         end if;
 

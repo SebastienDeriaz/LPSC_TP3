@@ -37,7 +37,6 @@ end tb_mandelbrot_iteration;
 architecture IterationTestbench of tb_mandelbrot_iteration is
     constant test_file_path : string := "../../../../../Tests/mandelbrot_iteration_testcases.txt";
     constant log_file_path  : string := "../../../../../Tests/logs/tb_mandelbrot_iteration.log";
-    --constant log_file_path  : string := "tb_mandelbrot_iteration.log";
     file test_file          : text;
     file log_file           : text;
 
@@ -234,7 +233,7 @@ begin
 
             total_error_count := total_error_count + error_count;
         end loop;
-        
+
         if total_error_count = 0 then
             writeline_color("Simulation success ! 0 errors", 42);
         else
