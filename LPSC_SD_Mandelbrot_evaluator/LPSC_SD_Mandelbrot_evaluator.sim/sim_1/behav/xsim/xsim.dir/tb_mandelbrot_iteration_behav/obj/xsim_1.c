@@ -54,24 +54,28 @@
 #endif
 typedef void (*funcp)(char *, char *);
 extern int main(int, char**);
+IKI_DLLESPEC extern void execute_45(char*, char *);
+IKI_DLLESPEC extern void execute_46(char*, char *);
+IKI_DLLESPEC extern void execute_47(char*, char *);
+IKI_DLLESPEC extern void execute_48(char*, char *);
+IKI_DLLESPEC extern void execute_39(char*, char *);
 IKI_DLLESPEC extern void execute_40(char*, char *);
 IKI_DLLESPEC extern void execute_41(char*, char *);
 IKI_DLLESPEC extern void execute_42(char*, char *);
 IKI_DLLESPEC extern void execute_43(char*, char *);
-IKI_DLLESPEC extern void execute_39(char*, char *);
-IKI_DLLESPEC extern void transaction_0(char*, char*, unsigned, unsigned, unsigned);
+IKI_DLLESPEC extern void execute_44(char*, char *);
 IKI_DLLESPEC extern void vhdl_transfunc_eventcallback(char*, char*, unsigned, unsigned, unsigned, char *);
 IKI_DLLESPEC extern void transaction_13(char*, char*, unsigned, unsigned, unsigned);
-funcp funcTab[8] = {(funcp)execute_40, (funcp)execute_41, (funcp)execute_42, (funcp)execute_43, (funcp)execute_39, (funcp)transaction_0, (funcp)vhdl_transfunc_eventcallback, (funcp)transaction_13};
-const int NumRelocateId= 8;
+funcp funcTab[12] = {(funcp)execute_45, (funcp)execute_46, (funcp)execute_47, (funcp)execute_48, (funcp)execute_39, (funcp)execute_40, (funcp)execute_41, (funcp)execute_42, (funcp)execute_43, (funcp)execute_44, (funcp)vhdl_transfunc_eventcallback, (funcp)transaction_13};
+const int NumRelocateId= 12;
 
 void relocate(char *dp)
 {
-	iki_relocate(dp, "xsim.dir/tb_mandelbrot_iteration_behav/xsim.reloc",  (void **)funcTab, 8);
-	iki_vhdl_file_variable_register(dp + 5632);
-	iki_vhdl_file_variable_register(dp + 5688);
-	iki_vhdl_file_variable_register(dp + 8136);
-	iki_vhdl_file_variable_register(dp + 8176);
+	iki_relocate(dp, "xsim.dir/tb_mandelbrot_iteration_behav/xsim.reloc",  (void **)funcTab, 12);
+	iki_vhdl_file_variable_register(dp + 6088);
+	iki_vhdl_file_variable_register(dp + 6144);
+	iki_vhdl_file_variable_register(dp + 8592);
+	iki_vhdl_file_variable_register(dp + 8632);
 
 
 	/*Populate the transaction function pointer field in the whole net structure */
