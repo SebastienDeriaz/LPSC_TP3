@@ -1,0 +1,13 @@
+#-----------------------------------------------------------
+# Vivado v2021.2 (64-bit)
+# SW Build 3367213 on Tue Oct 19 02:48:09 MDT 2021
+# IP Build 3369179 on Thu Oct 21 08:25:16 MDT 2021
+# Start of session at: Mon May  9 21:21:40 2022
+# Process ID: 21076
+# Current directory: D:/Ecole/HES-SO/Cours/LPSC/Labos/LPSC_TP3/LPSC_SD_Mandelbrot_evaluator/LPSC_SD_Mandelbrot_evaluator.runs/synth_1
+# Command line: vivado.exe -log tb_mandelbrot_loop.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source tb_mandelbrot_loop.tcl
+# Log file: D:/Ecole/HES-SO/Cours/LPSC/Labos/LPSC_TP3/LPSC_SD_Mandelbrot_evaluator/LPSC_SD_Mandelbrot_evaluator.runs/synth_1/tb_mandelbrot_loop.vds
+# Journal file: D:/Ecole/HES-SO/Cours/LPSC/Labos/LPSC_TP3/LPSC_SD_Mandelbrot_evaluator/LPSC_SD_Mandelbrot_evaluator.runs/synth_1\vivado.jou
+# Running On: PCSebastien, OS: Windows, CPU Frequency: 4200 MHz, CPU Physical cores: 4, Host memory: 17119 MB
+#-----------------------------------------------------------
+source tb_mandelbrot_loop.tcl -notrace

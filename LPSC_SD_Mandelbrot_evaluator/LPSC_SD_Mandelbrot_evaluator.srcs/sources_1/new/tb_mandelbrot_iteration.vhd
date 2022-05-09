@@ -197,15 +197,11 @@ begin
             duv_iterations_in <= iterations_in;
             duv_R             <= signed(R);
 
-            wait until rising_edge(clk);
-            wait for CLK_PERIOD;
-
             writeline_color("Testing line " & to_string(line_counter), 36, 4);
             line_counter := line_counter + 1;
-            --writeline_color("Debug value : " & to_string(std_logic_vector(duv_debug_value)), 35);
-            --writeline_color("Debug value 2 : " & to_string(std_logic_vector(duv_debug_value_2)), 35);
+
             wait until rising_edge(clk);
-            wait for CLK_PERIOD;
+
             -- Check Zr_next
             if std_logic_vector(duv_Zr_next) /= Zr_next then
                 writeline_color("Zr_next is wrong (" & to_string(std_logic_vector(duv_Zr_next))
