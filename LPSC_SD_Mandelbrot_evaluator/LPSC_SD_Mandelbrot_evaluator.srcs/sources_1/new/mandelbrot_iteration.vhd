@@ -81,11 +81,11 @@ architecture MandelbrotIteration of mandelbrot_iteration is
         return result(2 * m + 2 * n - 1 downto n);
     end signed_multiply_high;
 begin
-
     -- Synchronous process
     process (clk, reset) is
-        variable Zr_new : signed(m + n - 1 downto 0);
-        variable Zi_new : signed(m + n - 1 downto 0);
+        variable Zr_new     : signed(m + n - 1 downto 0);
+        variable Zi_new     : signed(m + n - 1 downto 0);
+        variable iterations : integer range 0 to max_iter;
     begin
         if reset = '1' then
             Zr_new := (others => '0');
@@ -94,19 +94,19 @@ begin
             -- Check if the previous iteration had reached the stopping radius
             if iterations_in = max_iter or done_in = '1' then
                 -- Nothing to do
-                iterations_out <= iterations_in;
+                iterations := iterations_in;
 
                 -- We propagate the signal
-                done_out       <= '1';
+                done_out <= '1';
                 -- The output signals are the same as the input
                 Zr_new := Zr_previous;
                 Zi_new := Zi_previous;
             elsif done_in = '0' then
                 -- We need to calculate a new value
-                iterations_out <= iterations_in + 1;
+                iterations := iterations_in + 1;
 
-                Zr_new := signed_multiply(Zr_previous, Zr_previous) - signed_multiply(Zi_previous, Zi_previous) + Cr;
-                Zi_new := signed_multiply(Zi_previous, Zr_previous) + signed_multiply(Zi_previous, Zr_previous) + Ci;
+                Zr_new     := signed_multiply(Zr_previous, Zr_previous) - signed_multiply(Zi_previous, Zi_previous) + Cr;
+                Zi_new     := signed_multiply(Zi_previous, Zr_previous) + signed_multiply(Zi_previous, Zr_previous) + Ci;
                 -- Determine is the max number of iterations has been reached
                 if signed_multiply_high(Zr_new, Zr_new) + signed_multiply_high(Zi_new, Zi_new) >= signed_multiply_high(R, R) then
                     -- The stopping radius or the max number of iterations has been reached
@@ -117,9 +117,9 @@ begin
                 end if;
             end if;
         end if;
-
         -- Affect the signals
-        Zr_next <= Zr_new;
-        Zi_next <= Zi_new;
+        iterations_out <= iterations;
+        Zr_next        <= Zr_new;
+        Zi_next        <= Zi_new;
     end process;
 end MandelbrotIteration;

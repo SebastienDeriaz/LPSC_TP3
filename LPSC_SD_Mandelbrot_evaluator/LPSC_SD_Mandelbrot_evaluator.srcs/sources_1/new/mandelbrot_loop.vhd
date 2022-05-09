@@ -127,7 +127,7 @@ begin
     );
     iterations           <= iterator_iterations_in;
 
-    debug_iterations     <= iterator_iterations_in;
+    debug_iterations     <= iterator_iterations_out;
 
     debug                <= iterator_done_out;
     debug_Zr             <= iterator_Zr_previous;
