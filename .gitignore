@@ -5,7 +5,8 @@
 #########
 #Exclude all
 #########
-*
+lpsc-mandelbrot/**
+LPSC_SD_Mandelbrot_evaluator/**
 !*/
 !.gitignore
 ###########################################################################
@@ -84,3 +85,8 @@
 !*.elf
 !*.bmm
 !*.xmp
+
+
+# Python
+*.pyc
+Download/lpsc-mandelbrot.zip
