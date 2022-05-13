@@ -59,9 +59,6 @@ entity mandelbrot_iteration is
         Zi_next        : out signed(m + n - 1 downto 0);  -- Output imaginary part (after iteration)
         iterations_out : out integer range 0 to max_iter; -- New number of iterations (+1 or +0 of iterations_in)
         done_out       : out std_logic                    -- Done signal
-        -- Debug
-        --debug_value    : out signed(m + n - 1 downto 0);
-        --debug_value_2  : out signed(2*m + n - 1 downto 0)
     );
 end mandelbrot_iteration;
 
@@ -81,25 +78,52 @@ architecture MandelbrotIteration of mandelbrot_iteration is
         return result(2 * m + 2 * n - 1 downto n);
     end signed_multiply_high;
 
-    signal Zr_new : signed(m + n - 1 downto 0);
-    signal Zi_new : signed(m + n - 1 downto 0);
-    signal done   : boolean;
+    --signal Zr_new : signed(m + n - 1 downto 0);
+    --signal Zi_new : signed(m + n - 1 downto 0);
 begin
-    -- Everything is combinatory
-    -- Calculated values
-    Zr_new  <= signed_multiply(Zr_previous, Zr_previous) - signed_multiply(Zi_previous, Zi_previous) + Cr;
-    Zi_new  <= signed_multiply(Zi_previous, Zr_previous) + signed_multiply(Zi_previous, Zr_previous) + Ci;
+    process (clk, reset)
+        variable Zr_new_v     : signed(m + n - 1 downto 0);
+        variable Zi_new_v     : signed(m + n - 1 downto 0);
+        variable done_input_v : boolean;
+        variable done_self_v  : boolean;
+    begin
 
-    Zr_next <= Zr_previous when done else
-        Zr_new;
-    Zi_next <= Zi_previous when done else
-        Zi_new;
+        --Zi_new_v := Zi_new;
+        --Zr_new_v := Zr_new;
 
-    done     <= signed_multiply_high(Zr_new, Zr_new) + signed_multiply_high(Zi_new, Zi_new) >= signed_multiply_high(R, R) or done_in = '1' or iterations_in = max_iter;
+        if reset = '1' then
+            Zr_next        <= (others => '0');
+            Zi_next        <= (others => '0');
+            done_out       <= '0';
+            iterations_out <= 0;
+            Zr_new_v := (others => '0');
+            Zi_new_v := (others => '0');
+        elsif rising_edge(clk) then
+            Zr_new_v     := signed_multiply(Zr_previous, Zr_previous) - signed_multiply(Zi_previous, Zi_previous) + Cr;
+            Zi_new_v     := signed_multiply(Zi_previous, Zr_previous) + signed_multiply(Zi_previous, Zr_previous) + Ci;
 
-    done_out <= '1' when done else
-        '0';
+            done_input_v := done_in = '1' or iterations_in = max_iter;
+            done_self_v  := signed_multiply_high(Zr_new_v, Zr_new_v) + signed_multiply_high(Zi_new_v, Zi_new_v) >= signed_multiply_high(R, R);
 
-    iterations_out <= iterations_in when done_in = '1' or iterations_in = max_iter else
-        iterations_in + 1;
+            if done_input_v then
+                iterations_out <= iterations_in;
+                Zr_next        <= Zr_previous;
+                Zi_next        <= Zi_previous;
+                done_out       <= '1';
+            else
+                Zr_next        <= Zr_new_v;
+                Zi_next        <= Zi_new_v;
+                iterations_out <= iterations_in + 1;
+                if done_self_v then
+                    done_out <= '1';
+                else
+                    done_out <= '0';
+                end if;
+
+            end if;
+        end if;
+
+        --Zi_new <= Zi_new_v;
+        --Zr_new <= Zr_new_v;
+    end process;
 end MandelbrotIteration;

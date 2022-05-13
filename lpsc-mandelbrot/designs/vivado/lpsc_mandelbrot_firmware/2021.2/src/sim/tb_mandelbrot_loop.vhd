@@ -46,41 +46,43 @@ architecture Behavioral of tb_mandelbrot_loop is
             R        : signed(m + n - 1 downto 0) := to_signed(2 * 2 ** n, m + n)
         );
         port (
-            clk              : in std_logic;
-            reset            : in std_logic;
+            clk                  : in std_logic;
+            reset                : in std_logic;
             -- In
-            Cr               : in signed(m + n - 1 downto 0);
-            Ci               : in signed(m + n - 1 downto 0);
-            start            : in std_logic;
+            Cr                   : in signed(m + n - 1 downto 0);
+            Ci                   : in signed(m + n - 1 downto 0);
+            start                : in std_logic;
             -- Out
-            done             : out std_logic;
-            iterations       : out integer range 0 to max_iter;
+            done                 : out std_logic;
+            iterations           : out integer range 0 to max_iter;
             -- Debug
-            debug            : out std_logic;
-            debug_iterations : out integer range 0 to max_iter;
-            debug_Zr         : out signed(m + n - 1 downto 0);
-            debug_Zi         : out signed(m + n - 1 downto 0);
-            debug_Zi_next    : out signed(m + n - 1 downto 0);
-            debug_Zr_next    : out signed(m + n - 1 downto 0)
+            debug                : out std_logic;
+            debug_iterations_in  : out integer range 0 to max_iter;
+            debug_iterations_out : out integer range 0 to max_iter;
+            debug_Zr             : out signed(m + n - 1 downto 0);
+            debug_Zi             : out signed(m + n - 1 downto 0);
+            debug_Zi_next        : out signed(m + n - 1 downto 0);
+            debug_Zr_next        : out signed(m + n - 1 downto 0)
         );
     end component;
 
-    signal clk                  : std_logic := '0';
-    signal reset                : std_logic := '0';
+    signal clk                      : std_logic := '0';
+    signal reset                    : std_logic := '0';
 
-    signal duv_clk              : std_logic;
-    signal duv_reset            : std_logic;
-    signal duv_Cr               : signed(m + n - 1 downto 0);
-    signal duv_Ci               : signed(m + n - 1 downto 0);
-    signal duv_start            : std_logic;
-    signal duv_done             : std_logic;
-    signal duv_iterations       : integer range 0 to max_iter;
-    signal duv_debug            : std_logic;
-    signal duv_debug_iterations : integer range 0 to max_iter;
-    signal duv_debug_Zr         : signed(m + n - 1 downto 0);
-    signal duv_debug_Zi         : signed(m + n - 1 downto 0);
-    signal duv_debug_Zi_next    : signed(m + n - 1 downto 0);
-    signal duv_debug_Zr_next    : signed(m + n - 1 downto 0);
+    signal duv_clk                  : std_logic;
+    signal duv_reset                : std_logic;
+    signal duv_Cr                   : signed(m + n - 1 downto 0);
+    signal duv_Ci                   : signed(m + n - 1 downto 0);
+    signal duv_start                : std_logic;
+    signal duv_done                 : std_logic;
+    signal duv_iterations           : integer range 0 to max_iter;
+    signal duv_debug                : std_logic;
+    signal duv_debug_iterations_in  : integer range 0 to max_iter;
+    signal duv_debug_iterations_out : integer range 0 to max_iter;
+    signal duv_debug_Zr             : signed(m + n - 1 downto 0);
+    signal duv_debug_Zi             : signed(m + n - 1 downto 0);
+    signal duv_debug_Zi_next        : signed(m + n - 1 downto 0);
+    signal duv_debug_Zr_next        : signed(m + n - 1 downto 0);
 
     procedure writeline_color(
         str              : string;
@@ -104,22 +106,23 @@ begin
         R        => R
     )
     port map(
-        clk              => duv_clk,
-        reset            => duv_reset,
+        clk                  => duv_clk,
+        reset                => duv_reset,
         -- In
-        Cr               => duv_Cr,
-        Ci               => duv_Ci,
-        start            => duv_start,
+        Cr                   => duv_Cr,
+        Ci                   => duv_Ci,
+        start                => duv_start,
         -- Out
-        done             => duv_done,
-        iterations       => duv_iterations,
+        done                 => duv_done,
+        iterations           => duv_iterations,
         -- Debug
-        debug            => duv_debug,
-        debug_iterations => duv_debug_iterations,
-        debug_Zr         => duv_debug_Zr,
-        debug_Zi         => duv_debug_Zi,
-        debug_Zr_next    => duv_debug_Zr_next,
-        debug_Zi_next    => duv_debug_Zi_next
+        debug                => duv_debug,
+        debug_iterations_in  => duv_debug_iterations_in,
+        debug_iterations_out => duv_debug_iterations_out,
+        debug_Zr             => duv_debug_Zr,
+        debug_Zi             => duv_debug_Zi,
+        debug_Zr_next        => duv_debug_Zr_next,
+        debug_Zi_next        => duv_debug_Zi_next
     );
 
     duv_clk   <= clk;
@@ -162,8 +165,8 @@ begin
             duv_Cr    <= signed(Cr);
             duv_Ci    <= signed(Ci);
             duv_start <= '1';
-            wait until rising_edge(clk);
-            wait until rising_edge(clk);
+            --wait until rising_edge(clk);
+            wait until falling_edge(clk);
             duv_start <= '0';
 
             wait until rising_edge(duv_done);
@@ -174,6 +177,8 @@ begin
                 & " instead of " & to_string(iterations_out) & ")", 31);
                 error_count := error_count + 1;
             end if;
+
+            wait for CLK_PERIOD * 10;
 
             total_error_count := total_error_count + error_count;
         end loop;

@@ -3,97 +3,55 @@
 [36;4mTesting line 2[0m
 [36;4mTesting line 3[0m
 [36;4mTesting line 4[0m
-[31mZr_next is wrong (000000000000000000 instead of 110010000100000111)[0m
-[31mZi_next is wrong (000000000000000000 instead of 001010101001011111)[0m
 [36;4mTesting line 5[0m
 [36;4mTesting line 6[0m
-[31mZr_next is wrong (000000000000000000 instead of 110010110111111100)[0m
-[31mZi_next is wrong (000000000000000000 instead of 001001001011010011)[0m
 [36;4mTesting line 7[0m
-[31mZr_next is wrong (000000000000000000 instead of 101101111001111001)[0m
-[31mZi_next is wrong (000000000000000000 instead of 111001001110100000)[0m
 [36;4mTesting line 8[0m
 [36;4mTesting line 9[0m
 [36;4mTesting line 10[0m
 [36;4mTesting line 11[0m
 [36;4mTesting line 12[0m
 [36;4mTesting line 13[0m
-[31mZr_next is wrong (101111010011100100 instead of 010101111010001000)[0m
-[31mZi_next is wrong (001000010001101000 instead of 011000110010101000)[0m
 [36;4mTesting line 14[0m
-[31mZr_next is wrong (101100100111001111 instead of 100101111110100010)[0m
-[31mZi_next is wrong (110111110110000100 instead of 100001000001011111)[0m
 [36;4mTesting line 15[0m
 [36;4mTesting line 16[0m
 [36;4mTesting line 17[0m
-[31mZr_next is wrong (000101000001011101 instead of 100000001010001010)[0m
-[31mZi_next is wrong (001011011001100011 instead of 001011000011011111)[0m
 [36;4mTesting line 18[0m
-[31mZr_next is wrong (111001011000000100 instead of 110000011000110101)[0m
-[31mZi_next is wrong (000100111110001010 instead of 110111101110001111)[0m
 [36;4mTesting line 19[0m
-[31mZr_next is wrong (110011000101111101 instead of 110010110110000110)[0m
-[31mZi_next is wrong (001011001111111100 instead of 010101110011001100)[0m
 [36;4mTesting line 20[0m
 [36;4mTesting line 21[0m
 [36;4mTesting line 22[0m
-[31mZr_next is wrong (101111101100110010 instead of 001100110100010111)[0m
-[31mZi_next is wrong (001000010001101000 instead of 100011000110010001)[0m
 [36;4mTesting line 23[0m
-[31mZr_next is wrong (110001100110101100 instead of 010111000111011110)[0m
-[31mZi_next is wrong (001000101110011101 instead of 100110110011001010)[0m
 [36;4mTesting line 24[0m
 [36;4mTesting line 25[0m
 [36;4mTesting line 26[0m
 [36;4mTesting line 27[0m
 [36;4mTesting line 28[0m
 [36;4mTesting line 29[0m
-[31mZr_next is wrong (111111000101110000 instead of 011100111101101100)[0m
-[31mZi_next is wrong (110100010101001001 instead of 110111111100100110)[0m
 [36;4mTesting line 30[0m
-[31mZr_next is wrong (000110011001101110 instead of 000000111110100111)[0m
-[31mZi_next is wrong (110111110110000100 instead of 100111111010001011)[0m
 [36;4mTesting line 31[0m
 [36;4mTesting line 32[0m
 [36;4mTesting line 33[0m
 [36;4mTesting line 34[0m
-[31mZr_next is wrong (101111111100001101 instead of 010101011011011110)[0m
-[31mZi_next is wrong (111101101100111100 instead of 000100101011001010)[0m
 [36;4mTesting line 35[0m
 [36;4mTesting line 36[0m
 [36;4mTesting line 37[0m
 [36;4mTesting line 38[0m
-[31mZr_next is wrong (110111011111100101 instead of 110101011001011100)[0m
-[31mZi_next is wrong (001000111010000000 instead of 101001101011100001)[0m
 [36;4mTesting line 39[0m
-[31mZr_next is wrong (110000100010000010 instead of 111010100100000011)[0m
-[31mZi_next is wrong (001011011001100011 instead of 010000001001100001)[0m
 [36;4mTesting line 40[0m
 [36;4mTesting line 41[0m
-[31mZr_next is wrong (110001000111110111 instead of 111101110101011111)[0m
-[31mZi_next is wrong (001001100000011100 instead of 100111110011001101)[0m
 [36;4mTesting line 42[0m
 [36;4mTesting line 43[0m
-[31mZr_next is wrong (111001101000111000 instead of 110100110100001111)[0m
-[31mZi_next is wrong (000010101010001000 instead of 110011111010101111)[0m
 [36;4mTesting line 44[0m
 [36;4mTesting line 45[0m
 [36;4mTesting line 46[0m
 [36;4mTesting line 47[0m
 [36;4mTesting line 48[0m
-[31mZr_next is wrong (101100101110001111 instead of 100101001101101001)[0m
-[31mZi_next is wrong (000111010111111101 instead of 010011000110101001)[0m
 [36;4mTesting line 49[0m
-[31mZr_next is wrong (111111100100100101 instead of 101111111110111110)[0m
-[31mZi_next is wrong (111011101000010011 instead of 111010011000101010)[0m
 [36;4mTesting line 50[0m
-[31mZr_next is wrong (101110110100101111 instead of 001111110000101111)[0m
-[31mZi_next is wrong (111010010001110010 instead of 010010001111110111)[0m
 [36;4mTesting line 51[0m
 [36;4mTesting line 52[0m
 [36;4mTesting line 53[0m
-[31mZr_next is wrong (101101100000101011 instead of 100001101011000001)[0m
-[31mZi_next is wrong (111110101110010011 instead of 001001010101110001)[0m
 [36;4mTesting line 54[0m
 [36;4mTesting line 55[0m
 [36;4mTesting line 56[0m
@@ -102,8 +60,6 @@
 [36;4mTesting line 59[0m
 [36;4mTesting line 60[0m
 [36;4mTesting line 61[0m
-[31mZr_next is wrong (000100010100100111 instead of 101010010001011010)[0m
-[31mZi_next is wrong (110100011000111111 instead of 110101000111110110)[0m
 [36;4mTesting line 62[0m
 [36;4mTesting line 63[0m
 [36;4mTesting line 64[0m
@@ -119,44 +75,24 @@
 [36;4mTesting line 74[0m
 [36;4mTesting line 75[0m
 [36;4mTesting line 76[0m
-[31mZr_next is wrong (000000011001110100 instead of 101111100011100111)[0m
-[31mZi_next is wrong (001001101010000011 instead of 000000010001001001)[0m
 [36;4mTesting line 77[0m
-[31mZr_next is wrong (111101100110011111 instead of 101110110101011010)[0m
-[31mZi_next is wrong (111101101110110111 instead of 000110101100010000)[0m
 [36;4mTesting line 78[0m
 [36;4mTesting line 79[0m
 [36;4mTesting line 80[0m
-[31mZr_next is wrong (111111111000001100 instead of 101101101000011110)[0m
-[31mZi_next is wrong (111010110110010100 instead of 111010111010100101)[0m
 [36;4mTesting line 81[0m
-[31mZr_next is wrong (111101101010101100 instead of 100100110110110011)[0m
-[31mZi_next is wrong (110100101110001001 instead of 111110011011000100)[0m
 [36;4mTesting line 82[0m
 [36;4mTesting line 83[0m
-[31mZr_next is wrong (111110010011010100 instead of 100110010110001111)[0m
-[31mZi_next is wrong (110100110001111111 instead of 000101010010011101)[0m
 [36;4mTesting line 84[0m
 [36;4mTesting line 85[0m
 [36;4mTesting line 86[0m
-[31mZr_next is wrong (111001000001101010 instead of 110000110011001010)[0m
-[31mZi_next is wrong (111010101100101101 instead of 000111000100001100)[0m
 [36;4mTesting line 87[0m
 [36;4mTesting line 88[0m
 [36;4mTesting line 89[0m
 [36;4mTesting line 90[0m
-[31mZr_next is wrong (101100101100110101 instead of 010111100110101011)[0m
-[31mZi_next is wrong (110111011101000101 instead of 110010110011000110)[0m
 [36;4mTesting line 91[0m
-[31mZr_next is wrong (101111110010011001 instead of 001000110000110111)[0m
-[31mZi_next is wrong (001010011000001100 instead of 011110101010011001)[0m
 [36;4mTesting line 92[0m
-[31mZr_next is wrong (110101001011000100 instead of 110010000110000010)[0m
-[31mZi_next is wrong (001001001101001110 instead of 100101100000001011)[0m
 [36;4mTesting line 93[0m
 [36;4mTesting line 94[0m
 [36;4mTesting line 95[0m
 [36;4mTesting line 96[0m
-[31mZr_next is wrong (111101110101111001 instead of 111000100101010011)[0m
-[31mZi_next is wrong (110111000111111100 instead of 001110011010100100)[0m
 [36;4mTesting line 97[0m

@@ -42,22 +42,23 @@ entity mandelbrot_loop is
         R        : signed(m + n - 1 downto 0) := to_signed(2 * 2 ** n, m + n)
     );
     port (
-        clk              : in std_logic;
-        reset            : in std_logic;
+        clk                  : in std_logic;
+        reset                : in std_logic;
         -- In
-        Cr               : in signed(m + n - 1 downto 0);
-        Ci               : in signed(m + n - 1 downto 0);
-        start            : in std_logic;
+        Cr                   : in signed(m + n - 1 downto 0);
+        Ci                   : in signed(m + n - 1 downto 0);
+        start                : in std_logic;
         -- Out
-        done             : out std_logic;
-        iterations       : out integer range 0 to max_iter;
+        done                 : out std_logic;
+        iterations           : out integer range 0 to max_iter;
         -- Debug
-        debug            : out std_logic;
-        debug_iterations : out integer range 0 to max_iter;
-        debug_Zr         : out signed(m + n - 1 downto 0);
-        debug_Zi         : out signed(m + n - 1 downto 0);
-        debug_Zr_next    : out signed(m + n - 1 downto 0);
-        debug_Zi_next    : out signed(m + n - 1 downto 0)
+        debug                : out std_logic;
+        debug_iterations_out : out integer range 0 to max_iter;
+        debug_iterations_in  : out integer range 0 to max_iter;
+        debug_Zr             : out signed(m + n - 1 downto 0);
+        debug_Zi             : out signed(m + n - 1 downto 0);
+        debug_Zr_next        : out signed(m + n - 1 downto 0);
+        debug_Zi_next        : out signed(m + n - 1 downto 0)
     );
 end mandelbrot_loop;
 
@@ -87,11 +88,6 @@ architecture Behavioral of mandelbrot_loop is
         );
     end component;
 
-    signal running                 : std_logic;
-    -- Iterator signals
-    --signal Zr                      : signed(m + n - 1 downto 0);
-    --signal Zi                      : signed(m + n - 1 downto 0);
-
     signal iterator_done_in        : std_logic;
     signal iterator_Cr             : signed (m + n - 1 downto 0);
     signal iterator_Ci             : signed (m + n - 1 downto 0);
@@ -113,7 +109,7 @@ begin
     port map(
         clk            => clk,
         reset          => reset,
-        done_in        => '0',
+        done_in        => iterator_done_in,
         Cr             => iterator_Cr,
         Ci             => iterator_Ci,
         Zr_previous    => iterator_Zr_previous,
@@ -125,49 +121,47 @@ begin
         iterations_out => iterator_iterations_out,
         done_out       => iterator_done_out
     );
-    debug_iterations <= iterator_iterations_out;
+    debug_iterations_in    <= iterator_iterations_in;
+    debug_iterations_out   <= iterator_iterations_out;
 
-    debug            <= iterator_done_out;
-    debug_Zr         <= iterator_Zr_previous;
-    debug_Zi         <= iterator_Zi_previous;
-    debug_Zi_next    <= iterator_Zi_next;
-    debug_Zr_next    <= iterator_Zr_next;
+    debug                  <= iterator_done_in;
+    debug_Zr               <= iterator_Zr_previous;
+    debug_Zi               <= iterator_Zi_previous;
+    debug_Zi_next          <= iterator_Zi_next;
+    debug_Zr_next          <= iterator_Zr_next;
+
+    iterator_iterations_in <= 0 when start = '1' else
+        iterator_iterations_out;
+    iterator_Zr_previous <= (others => '0') when start = '1' else
+        iterator_Zr_next;
+    iterator_Zi_previous <= (others => '0') when start = '1' else
+        iterator_Zi_next;
+    iterator_done_in <= '0' when start = '1' else
+        iterator_done_out;
+    iterator_Cr <= Cr;
+    iterator_Ci <= Ci;
 
     process (clk, reset)
-        variable running_v : std_logic;
     begin
-        running_v := running;
         if reset = '1' then
-            running_v := '0';
-            done                 <= '0';
-            iterator_Cr          <= (others => '0');
-            iterator_Ci          <= (others => '0');
-            iterations           <= 0;
-            iterator_Zr_previous <= (others => '0');
-            iterator_Zi_previous <= (others => '0');
+            done        <= '0';
+            --iterator_Cr <= (others => '0');
+            --iterator_Ci <= (others => '0');
+            iterations  <= 0;
         elsif rising_edge(clk) then
-            if running_v = '0' then
-                if start = '1' then
-                    done <= '0';
-                    running_v := '1';
-                    iterator_Cr            <= Cr;
-                    iterator_Ci            <= Ci;
-                    iterator_Zi_previous   <= (others => '0');
-                    iterator_Zr_previous   <= (others => '0');
-                    iterator_iterations_in <= 0;
-                end if;
+            if start = '1' then
+                --iterator_Cr <= Cr;
+                --iterator_Ci <= Ci;
+                done        <= '0';
             else
-                iterator_iterations_in <= iterator_iterations_out;
-                iterator_Zi_previous   <= iterator_Zi_next;
-                iterator_Zr_previous   <= iterator_Zr_next;
-
                 if iterator_done_out = '1' then
-                    running_v := '0';
+                    -- stop
                     done       <= '1';
                     iterations <= iterator_iterations_out;
+                else
+                    -- continue
                 end if;
             end if;
         end if;
-        running <= running_v;
     end process;
 end Behavioral;

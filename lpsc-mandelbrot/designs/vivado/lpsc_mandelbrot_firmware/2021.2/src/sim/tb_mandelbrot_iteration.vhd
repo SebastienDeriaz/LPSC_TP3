@@ -172,10 +172,11 @@ begin
         reset <= '0';
         wait for 2 * CLK_PERIOD;
 
+        wait until falling_edge(clk);
         -- Loop over the test cases
         while not endfile(test_file) loop
             error_count := 0;
-            wait until falling_edge(clk);
+
             readline(test_file, test_line);
             read(test_line, Cr);
             read(test_line, Ci);
@@ -201,6 +202,8 @@ begin
             line_counter := line_counter + 1;
 
             wait until rising_edge(clk);
+            wait for CLK_PERIOD/10;
+            --wait until falling_edge(clk);
 
             -- Check Zr_next
             if std_logic_vector(duv_Zr_next) /= Zr_next then
