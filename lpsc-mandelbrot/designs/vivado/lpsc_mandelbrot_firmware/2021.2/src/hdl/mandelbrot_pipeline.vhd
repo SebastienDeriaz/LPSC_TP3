@@ -2,21 +2,19 @@
 -- Company: 
 -- Engineer: 
 -- 
--- Create Date: 07.05.2022 13:56:19
--- Design Name: mandelbrot loop
--- Module Name: mandelbrot_loop - Behavioral
+-- Create Date: 13.05.2022
+-- Design Name: Mandelbrot pipeline
+-- Module Name: Mandelbrot pipeline - Behavioral
 -- Project Name: LPSC - TP3 - Mandelbrot
 -- Target Devices: 
 -- Tool Versions: 
 -- Description: 
 -- 
--- Loops over mandelbrot iteration and outputs the number of iterations for each
--- point to reach the stopping radius or the max number of iterations
---
+-- Pipeline of mandelbrot iterators
 --
 --
 -- Dependencies: 
--- mandelbrot_iteration.vhd
+-- mandelbrot_pipeline.vhd
 -- 
 -- Revision:
 -- Revision 0.01 - File Created
@@ -26,14 +24,6 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.NUMERIC_STD.all;
-
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
--- Uncomment the following library declaration if instantiating
--- any Xilinx leaf cells in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
-
 entity mandelbrot_loop is
     generic (
         max_iter : integer                    := 100;
@@ -42,23 +32,15 @@ entity mandelbrot_loop is
         R        : signed(m + n - 1 downto 0) := to_signed(2 * 2 ** n, m + n)
     );
     port (
-        clk                  : in std_logic;
-        reset                : in std_logic;
+        clk        : in std_logic;
+        reset      : in std_logic;
         -- In
-        Cr                   : in signed(m + n - 1 downto 0);
-        Ci                   : in signed(m + n - 1 downto 0);
-        start                : in std_logic;
+        Cr         : in signed(m + n - 1 downto 0);
+        Ci         : in signed(m + n - 1 downto 0);
+        start      : in std_logic;
         -- Out
-        done                 : out std_logic;
-        iterations           : out integer range 0 to max_iter
-        -- Debug
-        -- debug                : out std_logic;
-        -- debug_iterations_out : out integer range 0 to max_iter;
-        -- debug_iterations_in  : out integer range 0 to max_iter;
-        -- debug_Zr             : out signed(m + n - 1 downto 0);
-        -- debug_Zi             : out signed(m + n - 1 downto 0);
-        -- debug_Zr_next        : out signed(m + n - 1 downto 0);
-        -- debug_Zi_next        : out signed(m + n - 1 downto 0)
+        done       : out std_logic;
+        iterations : out integer range 0 to max_iter
     );
 end mandelbrot_loop;
 
@@ -100,36 +82,6 @@ architecture Behavioral of mandelbrot_loop is
     signal iterator_done_out       : std_logic;
 
 begin
-    iterator : mandelbrot_iteration
-    generic map(
-        max_iter => max_iter,
-        m        => m,
-        n        => n
-    )
-    port map(
-        clk            => clk,
-        reset          => reset,
-        done_in        => iterator_done_in,
-        Cr             => iterator_Cr,
-        Ci             => iterator_Ci,
-        Zr_previous    => iterator_Zr_previous,
-        Zi_previous    => iterator_Zi_previous,
-        R              => R,
-        iterations_in  => iterator_iterations_in,
-        Zr_next        => iterator_Zr_next,
-        Zi_next        => iterator_Zi_next,
-        iterations_out => iterator_iterations_out,
-        done_out       => iterator_done_out
-    );
-    -- debug_iterations_in    <= iterator_iterations_in;
-    -- debug_iterations_out   <= iterator_iterations_out;
-
-    -- debug                  <= iterator_done_in;
-    -- debug_Zr               <= iterator_Zr_previous;
-    -- debug_Zi               <= iterator_Zi_previous;
-    -- debug_Zi_next          <= iterator_Zi_next;
-    -- debug_Zr_next          <= iterator_Zr_next;
-
     iterator_iterations_in <= 0 when start = '1' else
         iterator_iterations_out;
     iterator_Zr_previous <= (others => '0') when start = '1' else
@@ -140,28 +92,67 @@ begin
         iterator_done_out;
     iterator_Cr <= Cr;
     iterator_Ci <= Ci;
+    GEN_REG :
+    for I in 0 to max_iter - 1 generate
+        if I = 0
+            if I = 0 generate
+                iterator : mandelbrot_iteration
+                generic map(
+                    max_iter => max_iter,
+                    m        => m,
+                    n        => n
+                )
+                port map(
+                    clk            => clk,
+                    reset          => reset,
+                    done_in        => iterator_done_in,
+                    Cr             => iterator_Cr,
+                    Ci             => iterator_Ci,
+                    Zr_previous    => iterator_Zr_previous,
+                    Zi_previous    => iterator_Zi_previous,
+                    R              => R,
+                    iterations_in  => iterator_iterations_in,
+                    Zr_next        => iterator_Zr_next,
+                    Zi_next        => iterator_Zi_next,
+                    iterations_out => iterator_iterations_out,
+                    done_out       => iterator_done_out
+                );
+            end generate;
 
-    process (clk, reset)
-    begin
-        if reset = '1' then
-            done        <= '0';
-            --iterator_Cr <= (others => '0');
-            --iterator_Ci <= (others => '0');
-            iterations  <= 0;
-        elsif rising_edge(clk) then
-            if start = '1' then
-                --iterator_Cr <= Cr;
-                --iterator_Ci <= Ci;
-                done        <= '0';
-            else
-                if iterator_done_out = '1' then
-                    -- stop
-                    done       <= '1';
-                    iterations <= iterator_iterations_out;
+            if I = max_iter -1 generate
+
+
+
+            end generate;
+
+
+            if I /= max_iter-1 and I /= 0 generate
+
+
+            end generate;
+                
+        end generate GEN_REG;
+        process (clk, reset)
+        begin
+            if reset = '1' then
+                done       <= '0';
+                --iterator_Cr <= (others => '0');
+                --iterator_Ci <= (others => '0');
+                iterations <= 0;
+            elsif rising_edge(clk) then
+                if start = '1' then
+                    --iterator_Cr <= Cr;
+                    --iterator_Ci <= Ci;
+                    done <= '0';
                 else
-                    -- continue
+                    if iterator_done_out = '1' then
+                        -- stop
+                        done       <= '1';
+                        iterations <= iterator_iterations_out;
+                    else
+                        -- continue
+                    end if;
                 end if;
             end if;
-        end if;
-    end process;
-end Behavioral;
+        end process;
+    end Behavioral;

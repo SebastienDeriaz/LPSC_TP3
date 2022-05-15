@@ -54,15 +54,15 @@ architecture Behavioral of tb_mandelbrot_loop is
             start                : in std_logic;
             -- Out
             done                 : out std_logic;
-            iterations           : out integer range 0 to max_iter;
+            iterations           : out integer range 0 to max_iter
             -- Debug
-            debug                : out std_logic;
-            debug_iterations_in  : out integer range 0 to max_iter;
-            debug_iterations_out : out integer range 0 to max_iter;
-            debug_Zr             : out signed(m + n - 1 downto 0);
-            debug_Zi             : out signed(m + n - 1 downto 0);
-            debug_Zi_next        : out signed(m + n - 1 downto 0);
-            debug_Zr_next        : out signed(m + n - 1 downto 0)
+            -- debug                : out std_logic;
+            -- debug_iterations_in  : out integer range 0 to max_iter;
+            -- debug_iterations_out : out integer range 0 to max_iter;
+            -- debug_Zr             : out signed(m + n - 1 downto 0);
+            -- debug_Zi             : out signed(m + n - 1 downto 0);
+            -- debug_Zi_next        : out signed(m + n - 1 downto 0);
+            -- debug_Zr_next        : out signed(m + n - 1 downto 0)
         );
     end component;
 
@@ -76,13 +76,13 @@ architecture Behavioral of tb_mandelbrot_loop is
     signal duv_start                : std_logic;
     signal duv_done                 : std_logic;
     signal duv_iterations           : integer range 0 to max_iter;
-    signal duv_debug                : std_logic;
-    signal duv_debug_iterations_in  : integer range 0 to max_iter;
-    signal duv_debug_iterations_out : integer range 0 to max_iter;
-    signal duv_debug_Zr             : signed(m + n - 1 downto 0);
-    signal duv_debug_Zi             : signed(m + n - 1 downto 0);
-    signal duv_debug_Zi_next        : signed(m + n - 1 downto 0);
-    signal duv_debug_Zr_next        : signed(m + n - 1 downto 0);
+    -- signal duv_debug                : std_logic;
+    -- signal duv_debug_iterations_in  : integer range 0 to max_iter;
+    -- signal duv_debug_iterations_out : integer range 0 to max_iter;
+    -- signal duv_debug_Zr             : signed(m + n - 1 downto 0);
+    -- signal duv_debug_Zi             : signed(m + n - 1 downto 0);
+    -- signal duv_debug_Zi_next        : signed(m + n - 1 downto 0);
+    -- signal duv_debug_Zr_next        : signed(m + n - 1 downto 0);
 
     procedure writeline_color(
         str              : string;
@@ -114,15 +114,15 @@ begin
         start                => duv_start,
         -- Out
         done                 => duv_done,
-        iterations           => duv_iterations,
+        iterations           => duv_iterations
         -- Debug
-        debug                => duv_debug,
-        debug_iterations_in  => duv_debug_iterations_in,
-        debug_iterations_out => duv_debug_iterations_out,
-        debug_Zr             => duv_debug_Zr,
-        debug_Zi             => duv_debug_Zi,
-        debug_Zr_next        => duv_debug_Zr_next,
-        debug_Zi_next        => duv_debug_Zi_next
+        -- debug                => duv_debug,
+        -- debug_iterations_in  => duv_debug_iterations_in,
+        -- debug_iterations_out => duv_debug_iterations_out,
+        -- debug_Zr             => duv_debug_Zr,
+        -- debug_Zi             => duv_debug_Zi,
+        -- debug_Zr_next        => duv_debug_Zr_next,
+        -- debug_Zi_next        => duv_debug_Zi_next
     );
 
     duv_clk   <= clk;

@@ -92,12 +92,13 @@ begin
         --Zr_new_v := Zr_new;
 
         if reset = '1' then
-            Zr_next        <= (others => '0');
-            Zi_next        <= (others => '0');
+            Zr_next <= (others  => '0');
+            Zi_next <= (others  => '0');
+            --Zr_new_v := (others => '0');
+            --Zi_new_v := (others => '0');
             done_out       <= '0';
             iterations_out <= 0;
-            Zr_new_v := (others => '0');
-            Zi_new_v := (others => '0');
+
         elsif rising_edge(clk) then
             Zr_new_v     := signed_multiply(Zr_previous, Zr_previous) - signed_multiply(Zi_previous, Zi_previous) + Cr;
             Zi_new_v     := signed_multiply(Zi_previous, Zr_previous) + signed_multiply(Zi_previous, Zr_previous) + Ci;
