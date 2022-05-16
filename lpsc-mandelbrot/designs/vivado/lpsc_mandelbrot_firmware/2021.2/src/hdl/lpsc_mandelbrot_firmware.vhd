@@ -153,6 +153,25 @@ architecture arch of lpsc_mandelbrot_firmware is
             Color1xDI    : in std_logic_vector(((C_PIXEL_SIZE * 3) - 1) downto 0));
     end component image_generator;
 
+    component mandelbrot_loop is
+        generic (
+            max_iter : integer                    := 100;
+            m        : integer                    := 3;
+            n        : integer                    := 15;
+            R        : signed(m + n - 1 downto 0) := to_signed(2 * 2 ** n, m + n)
+        );
+        port (
+            clk        : in std_logic;
+            reset      : in std_logic;
+            -- In
+            Cr         : in signed(m + n - 1 downto 0);
+            Ci         : in signed(m + n - 1 downto 0);
+            start      : in std_logic;
+            -- Out
+            done       : out std_logic;
+            iterations : out integer range 0 to max_iter
+        );
+    end component mandelbroot_loop;
     component blk_mem_gen_0 -- bram_video_memory_wauto_dauto_rdclk1_wrclk1
         port (
             clka  : in std_logic;
@@ -369,8 +388,11 @@ begin
                 HCountxDI    => HCountIntxD,
                 VCountxDI    => VCountIntxD,
                 VidOnxSI     => '1',
-                DataxDO      => DataImGen2BramMVxD,
-                Color1xDI    => RdDataFlagColor1xDP(((C_PIXEL_SIZE * 3) - 1) downto 0));
+                --DataxDO      => DataImGen2BramMVxD,
+                Color1xDI    => RdDataFlagColor1xDP(((C_PIXEL_SIZE * 3) - 1) downto 0)
+            );
+
+        DataImGen2BramMVxD <= x"329ea8";
 
         HVCountIntxP : process (all) is
         begin -- process HVCountxP
