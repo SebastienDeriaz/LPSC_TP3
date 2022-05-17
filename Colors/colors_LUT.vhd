@@ -1,4 +1,7 @@
 
+library ieee;
+use ieee.std_logic_1164.all;
+
 package mandelbrot_colors is
 
     type colors_array is array (0 to 100) of std_logic_vector(7 downto 0);

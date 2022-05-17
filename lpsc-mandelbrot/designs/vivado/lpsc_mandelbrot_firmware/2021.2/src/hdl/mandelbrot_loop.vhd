@@ -16,7 +16,7 @@
 --
 --
 -- Dependencies: 
--- mandelbrot_iteration.vhd
+-- mandelbrot_loop.vhd
 -- 
 -- Revision:
 -- Revision 0.01 - File Created
@@ -51,14 +51,6 @@ entity mandelbrot_loop is
         -- Out
         done                 : out std_logic;
         iterations           : out integer range 0 to max_iter
-        -- Debug
-        -- debug                : out std_logic;
-        -- debug_iterations_out : out integer range 0 to max_iter;
-        -- debug_iterations_in  : out integer range 0 to max_iter;
-        -- debug_Zr             : out signed(m + n - 1 downto 0);
-        -- debug_Zi             : out signed(m + n - 1 downto 0);
-        -- debug_Zr_next        : out signed(m + n - 1 downto 0);
-        -- debug_Zi_next        : out signed(m + n - 1 downto 0)
     );
 end mandelbrot_loop;
 
