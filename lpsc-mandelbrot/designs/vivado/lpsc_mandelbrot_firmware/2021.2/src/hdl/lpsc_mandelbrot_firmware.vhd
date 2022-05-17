@@ -137,41 +137,22 @@ architecture arch of lpsc_mandelbrot_firmware is
             ClkSys100MhzxCI : in std_logic);
     end component;
 
-    component image_generator is
-        generic (
-            C_DATA_SIZE  : integer;
-            C_PIXEL_SIZE : integer;
-            C_VGA_CONFIG : t_VgaConfig);
-        port (
-            ClkVgaxCI    : in std_logic;
-            RstxRAI      : in std_logic;
-            PllLockedxSI : in std_logic;
-            HCountxDI    : in std_logic_vector((C_DATA_SIZE - 1) downto 0);
-            VCountxDI    : in std_logic_vector((C_DATA_SIZE - 1) downto 0);
-            VidOnxSI     : in std_logic;
-            DataxDO      : out std_logic_vector(((C_PIXEL_SIZE * 3) - 1) downto 0);
-            Color1xDI    : in std_logic_vector(((C_PIXEL_SIZE * 3) - 1) downto 0));
-    end component image_generator;
+    -- component image_generator is
+    --     generic (
+    --         C_DATA_SIZE  : integer;
+    --         C_PIXEL_SIZE : integer;
+    --         C_VGA_CONFIG : t_VgaConfig);
+    --     port (
+    --         ClkVgaxCI    : in std_logic;
+    --         RstxRAI      : in std_logic;
+    --         PllLockedxSI : in std_logic;
+    --         HCountxDI    : in std_logic_vector((C_DATA_SIZE - 1) downto 0);
+    --         VCountxDI    : in std_logic_vector((C_DATA_SIZE - 1) downto 0);
+    --         VidOnxSI     : in std_logic;
+    --         DataxDO      : out std_logic_vector(((C_PIXEL_SIZE * 3) - 1) downto 0);
+    --         Color1xDI    : in std_logic_vector(((C_PIXEL_SIZE * 3) - 1) downto 0));
+    -- end component image_generator;
 
-    component mandelbrot_loop is
-        generic (
-            max_iter : integer                    := 100;
-            m        : integer                    := 3;
-            n        : integer                    := 15;
-            R        : signed(m + n - 1 downto 0) := to_signed(2 * 2 ** n, m + n)
-        );
-        port (
-            clk        : in std_logic;
-            reset      : in std_logic;
-            -- In
-            Cr         : in signed(m + n - 1 downto 0);
-            Ci         : in signed(m + n - 1 downto 0);
-            start      : in std_logic;
-            -- Out
-            done       : out std_logic;
-            iterations : out integer range 0 to max_iter
-        );
-    end component mandelbroot_loop;
     component blk_mem_gen_0 -- bram_video_memory_wauto_dauto_rdclk1_wrclk1
         port (
             clka  : in std_logic;
@@ -234,6 +215,26 @@ architecture arch of lpsc_mandelbrot_firmware is
     -- --
     -- attribute keep                                    : string;
     -- attribute keep of DebugFlagColor1RegPortxDP       : signal is "true";
+    component mandelbrot_loop_wrapper is
+        generic (
+            SIZE       : integer := 16;   -- Taille en bits de nombre au format virgule fixe
+            X_SIZE     : integer := 1024; -- Taille en X (Nombre de pixel) de la fractale à afficher
+            Y_SIZE     : integer := 600;  -- Taille en Y (Nombre de pixel) de la fractale à afficher
+            SCREEN_RES : integer := 10;
+            RAM_SIZE   : integer := 9); -- Nombre de bit pour les vecteurs X et Y de la position du pixel
+        port (
+            clk                 : in std_logic;
+            reset               : in std_logic;
+            -- In
+            run                 : in std_logic;
+            -- Out
+            memory_write_enable : out std_logic;
+            memory_address      : out std_logic_vector(2 * SCREEN_RES - 1 downto 0);
+            memory_data         : out std_logic_vector(RAM_SIZE - 1 downto 0)
+        );
+    end component mandelbrot_loop_wrapper;
+
+    signal BramVideoMemoryWriteEnable : std_logic;
 
 begin
 
@@ -322,20 +323,19 @@ begin
         BramVideoMemoryxI : blk_mem_gen_0 -- bram_video_memory_wauto_dauto_rdclk1_wrclk1
         port map(
             -- Port A (Write)
-            clka  => ClkMandelxC,
-            wea   => PllLockedxD,
-            addra => BramVideoMemoryWriteAddrxD,
-            dina  => BramVideoMemoryWriteDataxD,
-            douta => open,
+            clka   => ClkMandelxC,
+            wea(0) => BramVideoMemoryWriteEnable, --PllLockedxD,
+            addra  => BramVideoMemoryWriteAddrxD,
+            dina   => BramVideoMemoryWriteDataxD,
+            douta  => open,
             -- Port B (Read)
-            clkb  => ClkVgaxC,
+            clkb   => ClkVgaxC,
             web => (others => '0'),
-            addrb => BramVideoMemoryReadAddrxD,
+            addrb  => BramVideoMemoryReadAddrxD,
             dinb => (others => '0'),
-            doutb => BramVideoMemoryReadDataxD);
+            doutb  => BramVideoMemoryReadDataxD);
 
     end block VgaHdmiToFpgaUserCDCxB;
-
     -- FPGA User Clock Domain
     ---------------------------------------------------------------------------
 
@@ -347,15 +347,15 @@ begin
 
     begin -- block FpgaUserCDxB
 
-        PllNotLockedxAS             : PllNotLockedxS             <= not PllLockedxS;
-        PllLockedxAS                : PllLockedxD(0)             <= PllLockedxS;
+        PllNotLockedxAS         : PllNotLockedxS <= not PllLockedxS;
+        PllLockedxAS            : PllLockedxD(0) <= PllLockedxS;
 
-        BramVideoMemoryWriteDataxAS : BramVideoMemoryWriteDataxD <= DataImGen2BramMVxD(23 downto 21) &
-        DataImGen2BramMVxD(15 downto 13) &
-        DataImGen2BramMVxD(7 downto 5);
+        -- BramVideoMemoryWriteDataxAS : BramVideoMemoryWriteDataxD <= DataImGen2BramMVxD(23 downto 21) &
+        -- DataImGen2BramMVxD(15 downto 13) &
+        -- DataImGen2BramMVxD(7 downto 5);
 
-        BramVMWrAddrxAS : BramVideoMemoryWriteAddrxD <= VCountIntxD((C_BRAM_VIDEO_MEMORY_HIGH_ADDR_SIZE - 1) downto 0) &
-        HCountIntxD((C_BRAM_VIDEO_MEMORY_LOW_ADDR_SIZE - 1) downto 0);
+        --BramVMWrAddrxAS : BramVideoMemoryWriteAddrxD <= VCountIntxD((C_BRAM_VIDEO_MEMORY_HIGH_ADDR_SIZE - 1) downto 0) &
+        --HCountIntxD((C_BRAM_VIDEO_MEMORY_LOW_ADDR_SIZE - 1) downto 0);
 
         BUFGClkSysToClkMandelxI : BUFG
         port map(
@@ -369,55 +369,74 @@ begin
             PllLockedxSO    => PllLockedxS,
             ClkSys100MhzxCI => ClkSys100MhzBufgxC);
 
-        LpscImageGeneratorxI : entity work.lpsc_image_generator
-            generic map(
-                C_DATA_SIZE  => C_DATA_SIZE,
-                C_PIXEL_SIZE => C_PIXEL_SIZE,
-                C_VGA_CONFIG => C_VGA_CONFIG)
-            port map(
-                -- ClkVgaxCI    => ClkVgaxC,            --ClkMandelxC,
-                -- RstxRAI      => HdmiPllNotLockedxS,  --PllNotLockedxS,
-                -- PllLockedxSI => HdmiPllLockedxS,     --PllLockedxD(0),
-                -- HCountxDI    => HCountxD,            --HCountIntxD,
-                -- VCountxDI    => VCountxD,            --VCountIntxD,
-                -- VidOnxSI     => VidOnxS,             --'1',
-                -- DataxDO      => DataImGen2HDMIxD,    --DataImGen2BramMVxD,
-                ClkVgaxCI    => ClkMandelxC,
-                RstxRAI      => PllNotLockedxS,
-                PllLockedxSI => PllLockedxD(0),
-                HCountxDI    => HCountIntxD,
-                VCountxDI    => VCountIntxD,
-                VidOnxSI     => '1',
-                --DataxDO      => DataImGen2BramMVxD,
-                Color1xDI    => RdDataFlagColor1xDP(((C_PIXEL_SIZE * 3) - 1) downto 0)
-            );
+        -- LpscImageGeneratorxI : entity work.lpsc_image_generator
+        --     generic map(
+        --         C_DATA_SIZE  => C_DATA_SIZE,
+        --         C_PIXEL_SIZE => C_PIXEL_SIZE,
+        --         C_VGA_CONFIG => C_VGA_CONFIG)
+        --     port map(
+        --         -- ClkVgaxCI    => ClkVgaxC,            --ClkMandelxC,
+        --         -- RstxRAI      => HdmiPllNotLockedxS,  --PllNotLockedxS,
+        --         -- PllLockedxSI => HdmiPllLockedxS,     --PllLockedxD(0),
+        --         -- HCountxDI    => HCountxD,            --HCountIntxD,
+        --         -- VCountxDI    => VCountxD,            --VCountIntxD,
+        --         -- VidOnxSI     => VidOnxS,             --'1',
+        --         -- DataxDO      => DataImGen2HDMIxD,    --DataImGen2BramMVxD,
+        --         ClkVgaxCI    => ClkMandelxC,
+        --         RstxRAI      => PllNotLockedxS,
+        --         PllLockedxSI => PllLockedxD(0),
+        --         HCountxDI    => HCountIntxD,
+        --         VCountxDI    => VCountIntxD,
+        --         VidOnxSI     => '1',
+        --         --DataxDO      => DataImGen2BramMVxD,
+        --         Color1xDI    => RdDataFlagColor1xDP(((C_PIXEL_SIZE * 3) - 1) downto 0)
+        --     );
+        -- SD 16.05.2022
 
-        DataImGen2BramMVxD <= x"329ea8";
+        mandelbrot_loop_wrapper_inst : mandelbrot_loop_wrapper
+        generic map(
+            SIZE       => 18,
+            X_SIZE     => 800,
+            Y_SIZE     => 600,
+            SCREEN_RES => 10,
+            RAM_SIZE   => C_BRAM_VIDEO_MEMORY_DATA_SIZE
+        )
+        port map(
+            clk                 => ClkMandelxC,
+            reset               => PllNotLockedxS,
+            -- In
+            run                 => '1',
+            -- Out
+            memory_write_enable => BramVideoMemoryWriteEnable,
+            memory_address      => BramVideoMemoryWriteAddrxD,
+            memory_data         => BramVideoMemoryWriteDataxD
+        );
+        --DataImGen2BramMVxD <= x"329ea8"; -- single color
 
-        HVCountIntxP : process (all) is
-        begin -- process HVCountxP
+        -- HVCountIntxP : process (all) is
+        -- begin -- process HVCountxP
 
-            if PllNotLockedxS = '1' then
-                HCountIntxD <= (others => '0');
-                VCountIntxD <= (others => '0');
-            elsif rising_edge(ClkMandelxC) then
-                HCountIntxD <= HCountIntxD;
-                VCountIntxD <= VCountIntxD;
+        --     if PllNotLockedxS = '1' then
+        --         HCountIntxD <= (others => '0');
+        --         VCountIntxD <= (others => '0');
+        --     elsif rising_edge(ClkMandelxC) then
+        --         HCountIntxD <= HCountIntxD;
+        --         VCountIntxD <= VCountIntxD;
 
-                if unsigned(HCountIntxD) = (C_VGA_CONFIG.HActivexD - 1) then
-                    HCountIntxD <= (others => '0');
+        --         if unsigned(HCountIntxD) = (C_VGA_CONFIG.HActivexD - 1) then
+        --             HCountIntxD <= (others => '0');
 
-                    if unsigned(VCountIntxD) = (C_VGA_CONFIG.VActivexD - 1) then
-                        VCountIntxD <= (others => '0');
-                    else
-                        VCountIntxD <= std_logic_vector(unsigned(VCountIntxD) + 1);
-                    end if;
-                else
-                    HCountIntxD <= std_logic_vector(unsigned(HCountIntxD) + 1);
-                end if;
-            end if;
+        --             if unsigned(VCountIntxD) = (C_VGA_CONFIG.VActivexD - 1) then
+        --                 VCountIntxD <= (others => '0');
+        --             else
+        --                 VCountIntxD <= std_logic_vector(unsigned(VCountIntxD) + 1);
+        --             end if;
+        --         else
+        --             HCountIntxD <= std_logic_vector(unsigned(HCountIntxD) + 1);
+        --         end if;
+        --     end if;
 
-        end process HVCountIntxP;
+        -- end process HVCountIntxP;
 
     end block FpgaUserCDxB;
 
