@@ -25,6 +25,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.NUMERIC_STD.all;
+
 library work;
 use work.mandelbrot_colors.all;
 
@@ -41,7 +42,7 @@ entity mandelbrot_loop_wrapper is
         X_SIZE     : integer := 1024; -- Taille en X (Nombre de pixel) de la fractale à afficher
         Y_SIZE     : integer := 600;  -- Taille en Y (Nombre de pixel) de la fractale à afficher
         SCREEN_RES : integer := 10;   -- Nombre de bit pour les vecteurs X et Y de la position du pixel
-        RAM_SIZE   : integer := 9);
+        RAM_SIZE   : integer := 18);
     port (
         clk                 : in std_logic;
         reset               : in std_logic;
@@ -161,35 +162,36 @@ begin
 
     memory_address <= Y_screen((SCREEN_RES - 1) downto 0) & X_screen((SCREEN_RES - 1) downto 0);
     next_value     <= '1' when State = WAIT_FOR_NEXT else
-    '0';
+        '0';
     loop_start <= '1' when State = LOOP_INIT else
-    '0';
+        '0';
     memory_write_enable <= '1' when State = WRITE_MEMORY else
-    '0';
+        '0';
 
     process (clk, reset) is
     begin
         if reset = '1' then
             State       <= IDLE;
             memory_data <= (others => '0');
-            elsif rising_edge(clk) then
+        elsif rising_edge(clk) then
             if State = IDLE then
                 if run = '1' then
                     State <= WAIT_FOR_NEXT;
                 end if;
-                elsif State = WAIT_FOR_NEXT then
+            elsif State = WAIT_FOR_NEXT then
                 State <= LOOP_INIT;
-                elsif State = LOOP_INIT then
+            elsif State = LOOP_INIT then
                 State <= RUNNING;
-                elsif State = RUNNING then
+            elsif State = RUNNING then
                 if loop_done = '1' then
                     State       <= WRITE_MEMORY;
-                    memory_data <= R(loop_iterations)(7 downto 5) & G(loop_iterations)(7 downto 5) & B(loop_iterations)(7 downto 5);
+                    memory_data <= std_logic_vector(to_unsigned(loop_iterations, RAM_SIZE)); 
+                    
                 end if;
-                elsif State = WRITE_MEMORY then
+            elsif State = WRITE_MEMORY then
                 if run = '1' then
                     State <= WAIT_FOR_NEXT;
-                    else
+                else
                     State <= IDLE;
                 end if;
             end if;

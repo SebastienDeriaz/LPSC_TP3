@@ -29,6 +29,9 @@ use unisim.vcomponents.all;
 library lpsc_lib;
 use lpsc_lib.lpsc_hdmi_interface_pkg.all;
 
+library work;
+use work.mandelbrot_colors.all;
+
 entity lpsc_mandelbrot_firmware is
 
     generic (
@@ -73,13 +76,13 @@ architecture arch of lpsc_mandelbrot_firmware is
     -- 640x480
 
     -- constant C_VGA_CONFIG : t_VgaConfig := C_1024x768_VGACONFIG;
-    -- constant C_VGA_CONFIG : t_VgaConfig := C_1024x600_VGACONFIG;
-    constant C_VGA_CONFIG                       : t_VgaConfig           := C_800x600_VGACONFIG;
+    constant C_VGA_CONFIG                       : t_VgaConfig           := C_1024x600_VGACONFIG;
+    --constant C_VGA_CONFIG                       : t_VgaConfig           := C_800x600_VGACONFIG;
     -- constant C_VGA_CONFIG : t_VgaConfig := C_640x480_VGACONFIG;
 
     -- constant C_RESOLUTION : string := "1024x768";
-    -- constant C_RESOLUTION : string := "1024x600";
-    constant C_RESOLUTION                       : string                := "800x600";
+    constant C_RESOLUTION                       : string                := "1024x600";
+    --constant C_RESOLUTION                       : string                := "800x600";
     -- constant C_RESOLUTION : string := "640x480";
 
     constant C_DATA_SIZE                        : integer               := 16;
@@ -87,7 +90,7 @@ architecture arch of lpsc_mandelbrot_firmware is
     constant C_BRAM_VIDEO_MEMORY_ADDR_SIZE      : integer               := 20;
     constant C_BRAM_VIDEO_MEMORY_HIGH_ADDR_SIZE : integer               := 10;
     constant C_BRAM_VIDEO_MEMORY_LOW_ADDR_SIZE  : integer               := 10;
-    constant C_BRAM_VIDEO_MEMORY_DATA_SIZE      : integer               := 9;
+    constant C_BRAM_VIDEO_MEMORY_DATA_SIZE      : integer               := 7;
     constant C_CDC_TYPE                         : integer range 0 to 2  := 1;
     constant C_RESET_STATE                      : integer range 0 to 1  := 0;
     constant C_SINGLE_BIT                       : integer range 0 to 1  := 1;
@@ -137,34 +140,18 @@ architecture arch of lpsc_mandelbrot_firmware is
             ClkSys100MhzxCI : in std_logic);
     end component;
 
-    -- component image_generator is
-    --     generic (
-    --         C_DATA_SIZE  : integer;
-    --         C_PIXEL_SIZE : integer;
-    --         C_VGA_CONFIG : t_VgaConfig);
-    --     port (
-    --         ClkVgaxCI    : in std_logic;
-    --         RstxRAI      : in std_logic;
-    --         PllLockedxSI : in std_logic;
-    --         HCountxDI    : in std_logic_vector((C_DATA_SIZE - 1) downto 0);
-    --         VCountxDI    : in std_logic_vector((C_DATA_SIZE - 1) downto 0);
-    --         VidOnxSI     : in std_logic;
-    --         DataxDO      : out std_logic_vector(((C_PIXEL_SIZE * 3) - 1) downto 0);
-    --         Color1xDI    : in std_logic_vector(((C_PIXEL_SIZE * 3) - 1) downto 0));
-    -- end component image_generator;
-
     component blk_mem_gen_0 -- bram_video_memory_wauto_dauto_rdclk1_wrclk1
         port (
             clka  : in std_logic;
             wea   : in std_logic_vector(0 downto 0);
             addra : in std_logic_vector(19 downto 0);
-            dina  : in std_logic_vector(8 downto 0);
-            douta : out std_logic_vector(8 downto 0);
+            dina  : in std_logic_vector(6 downto 0);
+            douta : out std_logic_vector(6 downto 0);
             clkb  : in std_logic;
             web   : in std_logic_vector(0 downto 0);
             addrb : in std_logic_vector(19 downto 0);
-            dinb  : in std_logic_vector(8 downto 0);
-            doutb : out std_logic_vector(8 downto 0));
+            dinb  : in std_logic_vector(6 downto 0);
+            doutb : out std_logic_vector(6 downto 0));
     end component;
 
     -- Signals
@@ -221,7 +208,7 @@ architecture arch of lpsc_mandelbrot_firmware is
             X_SIZE     : integer := 1024; -- Taille en X (Nombre de pixel) de la fractale à afficher
             Y_SIZE     : integer := 600;  -- Taille en Y (Nombre de pixel) de la fractale à afficher
             SCREEN_RES : integer := 10;
-            RAM_SIZE   : integer := 9); -- Nombre de bit pour les vecteurs X et Y de la position du pixel
+            RAM_SIZE   : integer := 18);
         port (
             clk                 : in std_logic;
             reset               : in std_logic;
@@ -235,6 +222,8 @@ architecture arch of lpsc_mandelbrot_firmware is
     end component mandelbrot_loop_wrapper;
 
     signal BramVideoMemoryWriteEnable : std_logic;
+
+    signal test_signal                : std_logic_vector(6 downto 0);
 
 begin
 
@@ -277,9 +266,10 @@ begin
     VgaHdmiCDxB : block is
     begin -- block VgaHdmiCDxB
 
-        DataBramMV2HdmixAS : DataBramMV2HdmixD <= BramVideoMemoryReadDataxD(8 downto 6) & "00000" &
-        BramVideoMemoryReadDataxD(5 downto 3) & "00000" &
-        BramVideoMemoryReadDataxD(2 downto 0) & "00000";
+        DataBramMV2HdmixD <= 
+            R(to_integer(unsigned(BramVideoMemoryReadDataxD))) &
+            G(to_integer(unsigned(BramVideoMemoryReadDataxD))) &
+            B(to_integer(unsigned(BramVideoMemoryReadDataxD)));
 
         BramVMRdAddrxAS : BramVideoMemoryReadAddrxD <= VCountxD((C_BRAM_VIDEO_MEMORY_HIGH_ADDR_SIZE - 1) downto 0) &
         HCountxD((C_BRAM_VIDEO_MEMORY_LOW_ADDR_SIZE - 1) downto 0);
@@ -324,7 +314,7 @@ begin
         port map(
             -- Port A (Write)
             clka   => ClkMandelxC,
-            wea(0) => BramVideoMemoryWriteEnable, --PllLockedxD,
+            wea(0) => BramVideoMemoryWriteEnable,
             addra  => BramVideoMemoryWriteAddrxD,
             dina   => BramVideoMemoryWriteDataxD,
             douta  => open,
@@ -350,13 +340,6 @@ begin
         PllNotLockedxAS         : PllNotLockedxS <= not PllLockedxS;
         PllLockedxAS            : PllLockedxD(0) <= PllLockedxS;
 
-        -- BramVideoMemoryWriteDataxAS : BramVideoMemoryWriteDataxD <= DataImGen2BramMVxD(23 downto 21) &
-        -- DataImGen2BramMVxD(15 downto 13) &
-        -- DataImGen2BramMVxD(7 downto 5);
-
-        --BramVMWrAddrxAS : BramVideoMemoryWriteAddrxD <= VCountIntxD((C_BRAM_VIDEO_MEMORY_HIGH_ADDR_SIZE - 1) downto 0) &
-        --HCountIntxD((C_BRAM_VIDEO_MEMORY_LOW_ADDR_SIZE - 1) downto 0);
-
         BUFGClkSysToClkMandelxI : BUFG
         port map(
             O => ClkSys100MhzBufgxC,
@@ -368,30 +351,6 @@ begin
             reset           => ResetxR,
             PllLockedxSO    => PllLockedxS,
             ClkSys100MhzxCI => ClkSys100MhzBufgxC);
-
-        -- LpscImageGeneratorxI : entity work.lpsc_image_generator
-        --     generic map(
-        --         C_DATA_SIZE  => C_DATA_SIZE,
-        --         C_PIXEL_SIZE => C_PIXEL_SIZE,
-        --         C_VGA_CONFIG => C_VGA_CONFIG)
-        --     port map(
-        --         -- ClkVgaxCI    => ClkVgaxC,            --ClkMandelxC,
-        --         -- RstxRAI      => HdmiPllNotLockedxS,  --PllNotLockedxS,
-        --         -- PllLockedxSI => HdmiPllLockedxS,     --PllLockedxD(0),
-        --         -- HCountxDI    => HCountxD,            --HCountIntxD,
-        --         -- VCountxDI    => VCountxD,            --VCountIntxD,
-        --         -- VidOnxSI     => VidOnxS,             --'1',
-        --         -- DataxDO      => DataImGen2HDMIxD,    --DataImGen2BramMVxD,
-        --         ClkVgaxCI    => ClkMandelxC,
-        --         RstxRAI      => PllNotLockedxS,
-        --         PllLockedxSI => PllLockedxD(0),
-        --         HCountxDI    => HCountIntxD,
-        --         VCountxDI    => VCountIntxD,
-        --         VidOnxSI     => '1',
-        --         --DataxDO      => DataImGen2BramMVxD,
-        --         Color1xDI    => RdDataFlagColor1xDP(((C_PIXEL_SIZE * 3) - 1) downto 0)
-        --     );
-        -- SD 16.05.2022
 
         mandelbrot_loop_wrapper_inst : mandelbrot_loop_wrapper
         generic map(
@@ -411,32 +370,6 @@ begin
             memory_address      => BramVideoMemoryWriteAddrxD,
             memory_data         => BramVideoMemoryWriteDataxD
         );
-        --DataImGen2BramMVxD <= x"329ea8"; -- single color
-
-        -- HVCountIntxP : process (all) is
-        -- begin -- process HVCountxP
-
-        --     if PllNotLockedxS = '1' then
-        --         HCountIntxD <= (others => '0');
-        --         VCountIntxD <= (others => '0');
-        --     elsif rising_edge(ClkMandelxC) then
-        --         HCountIntxD <= HCountIntxD;
-        --         VCountIntxD <= VCountIntxD;
-
-        --         if unsigned(HCountIntxD) = (C_VGA_CONFIG.HActivexD - 1) then
-        --             HCountIntxD <= (others => '0');
-
-        --             if unsigned(VCountIntxD) = (C_VGA_CONFIG.VActivexD - 1) then
-        --                 VCountIntxD <= (others => '0');
-        --             else
-        --                 VCountIntxD <= std_logic_vector(unsigned(VCountIntxD) + 1);
-        --             end if;
-        --         else
-        --             HCountIntxD <= std_logic_vector(unsigned(HCountIntxD) + 1);
-        --         end if;
-        --     end if;
-
-        -- end process HVCountIntxP;
 
     end block FpgaUserCDxB;
 
