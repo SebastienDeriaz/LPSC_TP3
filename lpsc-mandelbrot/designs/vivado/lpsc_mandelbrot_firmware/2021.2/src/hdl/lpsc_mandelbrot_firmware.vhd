@@ -208,7 +208,7 @@ architecture arch of lpsc_mandelbrot_firmware is
             X_SIZE     : integer := 1024; -- Taille en X (Nombre de pixel) de la fractale à afficher
             Y_SIZE     : integer := 600;  -- Taille en Y (Nombre de pixel) de la fractale à afficher
             SCREEN_RES : integer := 10;
-            RAM_SIZE   : integer := 18);
+            RAM_SIZE   : integer := 7);
         port (
             clk                 : in std_logic;
             reset               : in std_logic;
@@ -355,7 +355,7 @@ begin
         mandelbrot_loop_wrapper_inst : mandelbrot_loop_wrapper
         generic map(
             SIZE       => 18,
-            X_SIZE     => 800,
+            X_SIZE     => 1024,
             Y_SIZE     => 600,
             SCREEN_RES => 10,
             RAM_SIZE   => C_BRAM_VIDEO_MEMORY_DATA_SIZE
