@@ -53,9 +53,24 @@ entity mandelbrot_pipeline_wrapper is
 end mandelbrot_pipeline_wrapper;
 
 architecture Behavioral of mandelbrot_pipeline_wrapper is
-    constant max_iter : integer := 100;
-    constant n        : integer := 15;
-    constant m        : integer := 3;
+    constant max_iter                     : integer                             := 100;
+    constant n                            : integer                             := 15;
+    constant m                            : integer                             := 3;
+
+    constant top_left_real_initial_value  : std_logic_vector(SIZE - 1 downto 0) := "101110011001100110";
+    constant top_left_imag_initial_value  : std_logic_vector(SIZE - 1 downto 0) := "001001100110011010";
+    constant real_increment_initial_value : std_logic_vector(SIZE - 1 downto 0) := "000000000010000011";
+    constant imag_increment_initial_value : std_logic_vector(SIZE - 1 downto 0) := "000000000010000011";
+    
+    constant top_left_real_zoom           : std_logic_vector(SIZE - 1 downto 0) := "000000000111100101";
+    constant top_left_imag_zoom           : std_logic_vector(SIZE - 1 downto 0) := "111111111001000110";
+    constant real_increment_zoom          : std_logic_vector(SIZE - 1 downto 0) := "111111111111111111";
+    constant imag_increment_zoom          : std_logic_vector(SIZE - 1 downto 0) := "111111111111111111";
+
+    signal real_increment                 : std_logic_vector(SIZE - 1 downto 0);
+    signal imag_increment                 : std_logic_vector(SIZE - 1 downto 0);
+    signal top_left_real                  : std_logic_vector(SIZE - 1 downto 0);
+    signal top_left_imag                  : std_logic_vector(SIZE - 1 downto 0);
 
     component mandelbrot_pipeline is
         generic (
@@ -77,24 +92,25 @@ architecture Behavioral of mandelbrot_pipeline_wrapper is
         );
     end component mandelbrot_pipeline;
 
-    component c_gen is
+    component ComplexValueGenerator is
         generic (
-            C_FXP_SIZE   : integer := 16;
-            C_X_SIZE     : integer := 1024;
-            C_Y_SIZE     : integer := 600;
-            C_SCREEN_RES : integer := 11);
-
+            SIZE       : integer;
+            X_SIZE     : integer;
+            Y_SIZE     : integer;
+            SCREEN_RES : integer);
         port (
-            ClkxC         : in std_logic;
-            RstxRA        : in std_logic;
-            ZoomInxSI     : in std_logic;
-            ZoomOutxSI    : in std_logic;
-            CRealxDO      : out std_logic_vector((C_FXP_SIZE - 1) downto 0);
-            CImaginaryxDO : out std_logic_vector((C_FXP_SIZE - 1) downto 0);
-            XScreenxDO    : out std_logic_vector((C_SCREEN_RES - 1) downto 0);
-            YScreenxDO    : out std_logic_vector((C_SCREEN_RES - 1) downto 0));
-
-    end component c_gen;
+            clk           : in std_logic;
+            reset         : in std_logic;
+            next_value    : in std_logic;
+            c_top_left_RE : in std_logic_vector((SIZE - 1) downto 0);
+            c_top_left_IM : in std_logic_vector((SIZE - 1) downto 0);
+            c_inc_RE      : in std_logic_vector((SIZE - 1) downto 0);
+            c_inc_IM      : in std_logic_vector((SIZE - 1) downto 0);
+            c_real        : out std_logic_vector((SIZE - 1) downto 0);
+            c_imaginary   : out std_logic_vector((SIZE - 1) downto 0);
+            X_screen      : out std_logic_vector((SCREEN_RES - 1) downto 0);
+            Y_screen      : out std_logic_vector((SCREEN_RES - 1) downto 0));
+    end component ComplexValueGenerator;
 
     signal Cr_start        : std_logic_vector(SIZE - 1 downto 0);
     signal Ci_start        : std_logic_vector(SIZE - 1 downto 0);
@@ -102,14 +118,19 @@ architecture Behavioral of mandelbrot_pipeline_wrapper is
     signal Ci_start_signed : signed(SIZE - 1 downto 0);
 
     type screen_array is array(0 to max_iter - 1) of std_logic_vector((SCREEN_RES - 1) downto 0);
-    signal X_screen_array : screen_array;
-    signal Y_screen_array : screen_array;
-    signal valid          : std_logic;
+    signal X_screen_array     : screen_array;
+    signal Y_screen_array     : screen_array;
+    signal valid              : std_logic;
 
-    signal X_screen       : std_logic_vector(SCREEN_RES - 1 downto 0);
-    signal Y_screen       : std_logic_vector(SCREEN_RES - 1 downto 0);
+    signal X_screen           : std_logic_vector(SCREEN_RES - 1 downto 0);
+    signal Y_screen           : std_logic_vector(SCREEN_RES - 1 downto 0);
+    constant zoom_clock_max   : integer := 5000000;
+    signal zoom_clock_counter : integer range 0 to zoom_clock_max;
 
-    signal iterations_out : integer range 0 to 100;
+    constant zoom_iterations  : integer := 100;
+    signal zoom_counter       : integer range 0 to zoom_iterations;
+
+    signal iterations_out     : integer range 0 to 100;
 begin
 
     mandelbroot_pipeline_inst : mandelbrot_pipeline
@@ -133,23 +154,24 @@ begin
 
     Cr_start_signed <= signed(Cr_start);
     Ci_start_signed <= signed(Ci_start);
-
-    c_gen_inst : c_gen
-    generic map(
-        C_FXP_SIZE   => SIZE,
-        C_X_SIZE     => X_SIZE,
-        C_Y_SIZE     => Y_SIZE,
-        C_SCREEN_RES => SCREEN_RES
-    )
-    port map(
-        ClkxC         => clk,
-        RstxRA        => reset,
-        ZoomInxSI     => '0',
-        ZoomOutxSI    => '0',
-        CRealxDO      => Cr_start,
-        CImaginaryxDO => Ci_start,
-        XScreenxDO    => X_screen,
-        YScreenxDO    => Y_screen);
+    ComplexValueGeneratorxI : entity work.ComplexValueGenerator
+        generic map(
+            SIZE       => SIZE,
+            X_SIZE     => X_SIZE,
+            Y_SIZE     => Y_SIZE,
+            SCREEN_RES => SCREEN_RES)
+        port map(
+            clk           => clk,
+            reset         => reset,
+            next_value    => '1',
+            c_inc_RE      => real_increment,
+            c_inc_IM      => imag_increment,
+            c_top_left_RE => top_left_real,
+            c_top_left_IM => top_left_imag,
+            c_real        => Cr_start,
+            c_imaginary   => Ci_start,
+            X_screen      => X_screen,
+            Y_screen      => Y_screen);
 
     -- pipeline inputs
     X_screen_array(0) <= X_screen when run = '1' else
@@ -164,12 +186,37 @@ begin
     process (clk, reset) is
     begin
         if reset = '1' then
-            -- Nothing to reset
+            real_increment     <= real_increment_initial_value;
+            imag_increment     <= imag_increment_initial_value;
+            top_left_real      <= top_left_real_initial_value;
+            top_left_imag      <= top_left_imag_initial_value;
+            zoom_counter       <= 0;
+            zoom_clock_counter <= 0;
+
         elsif rising_edge(clk) then
             for I in 1 to max_iter - 1 loop
                 X_screen_array(I) <= X_screen_array(I - 1);
                 Y_screen_array(I) <= Y_screen_array(I - 1);
             end loop;
+            if zoom_clock_counter = zoom_clock_max then
+                zoom_clock_counter <= 0;
+
+                if zoom_counter = zoom_iterations then
+                    zoom_counter   <= 0;
+                    real_increment <= real_increment_initial_value;
+                    imag_increment <= imag_increment_initial_value;
+                    top_left_real  <= top_left_real_initial_value;
+                    top_left_imag  <= top_left_imag_initial_value;
+                else
+                    zoom_counter   <= zoom_counter + 1;
+                    real_increment <= std_logic_vector(signed(real_increment) + signed(real_increment_zoom));
+                    imag_increment <= std_logic_vector(signed(imag_increment) + signed(imag_increment_zoom));
+                    top_left_real  <= std_logic_vector(signed(top_left_real) + signed(top_left_real_zoom));
+                    top_left_imag  <= std_logic_vector(signed(top_left_imag) + signed(top_left_imag_zoom));
+                end if;
+            else
+                zoom_clock_counter <= zoom_clock_counter + 1;
+            end if;
         end if;
     end process;
 

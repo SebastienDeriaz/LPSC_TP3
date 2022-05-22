@@ -5,8 +5,8 @@ from fixedpoint import FixedPoint
 m = 3  # Integer bits (including sign bit)
 n = 15  # decimals bits
 range_real = (-2.2, 1)
-range_imag = (-1.2, 1.2)
-screen = (1280, 800)
+range_imag = (-0.9375, 0.9375)
+screen = (1024, 600)
 MAX_ITER = 100
 R = 2
 
