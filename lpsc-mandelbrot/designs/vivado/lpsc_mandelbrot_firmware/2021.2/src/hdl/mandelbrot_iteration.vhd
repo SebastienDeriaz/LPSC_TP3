@@ -74,12 +74,8 @@ architecture MandelbrotIteration of mandelbrot_iteration is
         variable result : signed(2 * m + 2 * n - 1 downto 0);
     begin
         result := A * B;
-        --return signed(result(2*m + 2*n - 1 downto n));
         return result(2 * m + 2 * n - 1 downto n);
     end signed_multiply_high;
-
-    --signal Zr_new : signed(m + n - 1 downto 0);
-    --signal Zi_new : signed(m + n - 1 downto 0);
 begin
     process (clk, reset)
         variable Zr_new_v     : signed(m + n - 1 downto 0);
@@ -87,9 +83,6 @@ begin
         variable done_input_v : boolean;
         variable done_self_v  : boolean;
     begin
-
-        --Zi_new_v := Zi_new;
-        --Zr_new_v := Zr_new;
 
         if reset = '1' then
             Zr_next <= (others  => '0');
@@ -123,8 +116,5 @@ begin
 
             end if;
         end if;
-
-        --Zi_new <= Zi_new_v;
-        --Zr_new <= Zr_new_v;
     end process;
 end MandelbrotIteration;

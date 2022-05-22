@@ -28,9 +28,13 @@ use unisim.vcomponents.all;
 
 library lpsc_lib;
 use lpsc_lib.lpsc_hdmi_interface_pkg.all;
+--use lpsc_lib.colors_LUT.all;
+
+--library xil_defaultlib;
+--use xil_defaultlib.colors_LUT.all;
 
 library work;
-use work.mandelbrot_colors.all;
+use work.colors_LUT.all;
 
 entity lpsc_mandelbrot_firmware is
 
@@ -202,7 +206,7 @@ architecture arch of lpsc_mandelbrot_firmware is
     -- --
     -- attribute keep                                    : string;
     -- attribute keep of DebugFlagColor1RegPortxDP       : signal is "true";
-    component mandelbrot_loop_wrapper is
+    component mandelbrot_pipeline_wrapper is
         generic (
             SIZE       : integer := 16;   -- Taille en bits de nombre au format virgule fixe
             X_SIZE     : integer := 1024; -- Taille en X (Nombre de pixel) de la fractale à afficher
@@ -219,11 +223,9 @@ architecture arch of lpsc_mandelbrot_firmware is
             memory_address      : out std_logic_vector(2 * SCREEN_RES - 1 downto 0);
             memory_data         : out std_logic_vector(RAM_SIZE - 1 downto 0)
         );
-    end component mandelbrot_loop_wrapper;
+    end component mandelbrot_pipeline_wrapper;
 
     signal BramVideoMemoryWriteEnable : std_logic;
-
-    signal test_signal                : std_logic_vector(6 downto 0);
 
 begin
 
@@ -352,7 +354,7 @@ begin
             PllLockedxSO    => PllLockedxS,
             ClkSys100MhzxCI => ClkSys100MhzBufgxC);
 
-        mandelbrot_loop_wrapper_inst : mandelbrot_loop_wrapper
+        mandelbrot_pipeline_wrapper_inst : mandelbrot_pipeline_wrapper
         generic map(
             SIZE       => 18,
             X_SIZE     => 1024,

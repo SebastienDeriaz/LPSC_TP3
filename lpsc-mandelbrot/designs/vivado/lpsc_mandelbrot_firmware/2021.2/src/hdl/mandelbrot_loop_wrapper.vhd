@@ -26,8 +26,8 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.NUMERIC_STD.all;
 
-library work;
-use work.mandelbrot_colors.all;
+--library work;
+--use work.mandelbrot_colors.all;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values

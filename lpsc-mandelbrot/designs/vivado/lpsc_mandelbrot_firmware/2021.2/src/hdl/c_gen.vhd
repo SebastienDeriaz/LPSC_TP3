@@ -76,15 +76,15 @@ architecture behavioral of c_gen is
 
     -- Complex constants
     -- Zoom 0
-    constant C_TOP_LEFT_RE_0 : std_logic_vector((C_FXP_SIZE - 1) downto 0) := "1110000000000000";
-    constant C_TOP_LEFT_IM_0 : std_logic_vector((C_FXP_SIZE - 1) downto 0) := "0001000000000000";
-    constant C_INC_RE_0      : std_logic_vector((C_FXP_SIZE - 1) downto 0) := "0000000000010000";
-    constant C_INC_IM_0      : std_logic_vector((C_FXP_SIZE - 1) downto 0) := "0000000000001110";
+    constant C_TOP_LEFT_RE_0 : std_logic_vector((C_FXP_SIZE - 1) downto 0) := "101110011001100110"; -- -2.2
+    constant C_TOP_LEFT_IM_0 : std_logic_vector((C_FXP_SIZE - 1) downto 0) := "001001100110011010"; -- 1.2
+    constant C_INC_RE_0      : std_logic_vector((C_FXP_SIZE - 1) downto 0) := "000000000010000011"; -- 0.004
+    constant C_INC_IM_0      : std_logic_vector((C_FXP_SIZE - 1) downto 0) := "000000000010000011"; -- 0.004
     -- Zoom 1
-    constant C_TOP_LEFT_RE_1 : std_logic_vector((C_FXP_SIZE - 1) downto 0) := "1110000000000000";
-    constant C_TOP_LEFT_IM_1 : std_logic_vector((C_FXP_SIZE - 1) downto 0) := "0001000000000000";
-    constant C_INC_RE_1      : std_logic_vector((C_FXP_SIZE - 1) downto 0) := "0000000000001000";
-    constant C_INC_IM_1      : std_logic_vector((C_FXP_SIZE - 1) downto 0) := "0000000000000110";
+    constant C_TOP_LEFT_RE_1 : std_logic_vector((C_FXP_SIZE - 1) downto 0) := "101110011001100110"; -- -2.2
+    constant C_TOP_LEFT_IM_1 : std_logic_vector((C_FXP_SIZE - 1) downto 0) := "001001100110011010"; -- 1.2
+    constant C_INC_RE_1      : std_logic_vector((C_FXP_SIZE - 1) downto 0) := "000000000010000011"; -- A changer pour adapter le zoom
+    constant C_INC_IM_1      : std_logic_vector((C_FXP_SIZE - 1) downto 0) := "000000000010000011"; -- 
 
     -- Generic memory
     constant C_WORD_SIZE    : integer := (4 * C_FXP_SIZE);
