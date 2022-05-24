@@ -28,15 +28,6 @@ library IEEE;
 use ieee.STD_LOGIC_1164.all;
 use ieee.numeric_std.all;
 
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
-
--- Uncomment the following library declaration if instantiating
--- any Xilinx leaf cells in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
-
 entity mandelbrot_iteration is
     generic (
         max_iter : integer := 100; -- Max number of iterations
@@ -63,6 +54,7 @@ entity mandelbrot_iteration is
 end mandelbrot_iteration;
 
 architecture MandelbrotIteration of mandelbrot_iteration is
+    -- Multiply function with n+m bits output
     function signed_multiply(A : signed; B : signed) return signed is
         variable result : signed(2 * m + 2 * n - 1 downto 0);
     begin
@@ -70,6 +62,7 @@ architecture MandelbrotIteration of mandelbrot_iteration is
         return signed(result(m + n + n - 1 downto n));
     end signed_multiply;
 
+    -- Multiply function with more bits as output
     function signed_multiply_high(A : signed; B : signed) return signed is
         variable result : signed(2 * m + 2 * n - 1 downto 0);
     begin
@@ -87,18 +80,19 @@ begin
         if reset = '1' then
             Zr_next <= (others  => '0');
             Zi_next <= (others  => '0');
-            --Zr_new_v := (others => '0');
-            --Zi_new_v := (others => '0');
             done_out       <= '0';
             iterations_out <= 0;
 
         elsif rising_edge(clk) then
+            -- Calculate the new Zr and new Zi
             Zr_new_v     := signed_multiply(Zr_previous, Zr_previous) - signed_multiply(Zi_previous, Zi_previous) + Cr;
             Zi_new_v     := signed_multiply(Zi_previous, Zr_previous) + signed_multiply(Zi_previous, Zr_previous) + Ci;
-
+            
+            -- Check if we're done
             done_input_v := done_in = '1' or iterations_in = max_iter;
             done_self_v  := signed_multiply_high(Zr_new_v, Zr_new_v) + signed_multiply_high(Zi_new_v, Zi_new_v) >= signed_multiply_high(R, R);
 
+            -- Update the output values
             if done_input_v then
                 iterations_out <= iterations_in;
                 Zr_next        <= Zr_previous;

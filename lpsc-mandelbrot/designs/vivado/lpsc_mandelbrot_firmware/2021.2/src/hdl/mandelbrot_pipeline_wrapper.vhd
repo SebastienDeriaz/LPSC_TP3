@@ -39,7 +39,7 @@ entity mandelbrot_pipeline_wrapper is
         X_SIZE     : integer := 1024; -- Taille en X (Nombre de pixel) de la fractale à afficher
         Y_SIZE     : integer := 600;  -- Taille en Y (Nombre de pixel) de la fractale à afficher
         SCREEN_RES : integer := 10;   -- Nombre de bit pour les vecteurs X et Y de la position du pixel
-        RAM_SIZE   : integer := 18);
+        RAM_SIZE   : integer := 7);
     port (
         clk                 : in std_logic;
         reset               : in std_logic;
@@ -57,16 +57,19 @@ architecture Behavioral of mandelbrot_pipeline_wrapper is
     constant n                            : integer                             := 15;
     constant m                            : integer                             := 3;
 
+    -- Initial values
     constant top_left_real_initial_value  : std_logic_vector(SIZE - 1 downto 0) := "101110011001100110";
-    constant top_left_imag_initial_value  : std_logic_vector(SIZE - 1 downto 0) := "001001100110011010";
-    constant real_increment_initial_value : std_logic_vector(SIZE - 1 downto 0) := "000000000010000011";
-    constant imag_increment_initial_value : std_logic_vector(SIZE - 1 downto 0) := "000000000010000011";
-    
+    constant top_left_imag_initial_value  : std_logic_vector(SIZE - 1 downto 0) := "000111100000000000";
+    constant real_increment_initial_value : std_logic_vector(SIZE - 1 downto 0) := "000000000001100111";
+    constant imag_increment_initial_value : std_logic_vector(SIZE - 1 downto 0) := "000000000001100111";
+
+    -- Increment to the initial values on each zoom iteration
     constant top_left_real_zoom           : std_logic_vector(SIZE - 1 downto 0) := "000000000111100101";
     constant top_left_imag_zoom           : std_logic_vector(SIZE - 1 downto 0) := "111111111001000110";
     constant real_increment_zoom          : std_logic_vector(SIZE - 1 downto 0) := "111111111111111111";
     constant imag_increment_zoom          : std_logic_vector(SIZE - 1 downto 0) := "111111111111111111";
 
+    -- Current values
     signal real_increment                 : std_logic_vector(SIZE - 1 downto 0);
     signal imag_increment                 : std_logic_vector(SIZE - 1 downto 0);
     signal top_left_real                  : std_logic_vector(SIZE - 1 downto 0);
@@ -124,10 +127,14 @@ architecture Behavioral of mandelbrot_pipeline_wrapper is
 
     signal X_screen           : std_logic_vector(SCREEN_RES - 1 downto 0);
     signal Y_screen           : std_logic_vector(SCREEN_RES - 1 downto 0);
+    -- Zoom clock counter (10x per second)
     constant zoom_clock_max   : integer := 5000000;
     signal zoom_clock_counter : integer range 0 to zoom_clock_max;
-
-    constant zoom_iterations  : integer := 100;
+    -- Zoom iterations
+    -- 0 - 100 : nothing
+    -- 101 -- 200 : zoom in
+    -- 201 -- 300 : nothing
+    constant zoom_iterations  : integer := 300;
     signal zoom_counter       : integer range 0 to zoom_iterations;
 
     signal iterations_out     : integer range 0 to 100;
@@ -179,6 +186,7 @@ begin
     Y_screen_array(0) <= Y_screen when run = '1' else
     (others => '0');
 
+    -- Memory interface
     memory_address      <= Y_screen_array(max_iter - 1) & X_screen_array(max_iter - 1);
     memory_data         <= std_logic_vector(to_unsigned(iterations_out, RAM_SIZE));
     memory_write_enable <= valid;
@@ -194,25 +202,35 @@ begin
             zoom_clock_counter <= 0;
 
         elsif rising_edge(clk) then
+            -- Shift the X_screen and Y_screen values (to account for the delay in the pipeline)
             for I in 1 to max_iter - 1 loop
                 X_screen_array(I) <= X_screen_array(I - 1);
                 Y_screen_array(I) <= Y_screen_array(I - 1);
             end loop;
+            -- If the zoom clock ticks
             if zoom_clock_counter = zoom_clock_max then
                 zoom_clock_counter <= 0;
-
+                -- Evaluate the next zoom iteration
                 if zoom_counter = zoom_iterations then
+                    -- Reset the zoom
                     zoom_counter   <= 0;
                     real_increment <= real_increment_initial_value;
                     imag_increment <= imag_increment_initial_value;
                     top_left_real  <= top_left_real_initial_value;
                     top_left_imag  <= top_left_imag_initial_value;
                 else
-                    zoom_counter   <= zoom_counter + 1;
-                    real_increment <= std_logic_vector(signed(real_increment) + signed(real_increment_zoom));
-                    imag_increment <= std_logic_vector(signed(imag_increment) + signed(imag_increment_zoom));
-                    top_left_real  <= std_logic_vector(signed(top_left_real) + signed(top_left_real_zoom));
-                    top_left_imag  <= std_logic_vector(signed(top_left_imag) + signed(top_left_imag_zoom));
+                    -- Do an iteration
+                    zoom_counter <= zoom_counter + 1;
+                    -- test
+                    if zoom_counter >= zoom_iterations / 3 and
+                        zoom_counter   <= 2 * zoom_iterations / 3 then
+                            -- If we need to zoom in
+                            -- Update the current display constants
+                            real_increment <= std_logic_vector(signed(real_increment) + signed(real_increment_zoom));
+                        imag_increment <= std_logic_vector(signed(imag_increment) + signed(imag_increment_zoom));
+                        top_left_real  <= std_logic_vector(signed(top_left_real) + signed(top_left_real_zoom));
+                        top_left_imag  <= std_logic_vector(signed(top_left_imag) + signed(top_left_imag_zoom));
+                    end if;
                 end if;
             else
                 zoom_clock_counter <= zoom_clock_counter + 1;

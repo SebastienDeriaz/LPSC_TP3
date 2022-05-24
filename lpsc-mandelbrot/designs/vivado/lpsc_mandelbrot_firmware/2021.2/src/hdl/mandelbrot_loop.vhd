@@ -137,21 +137,15 @@ begin
     begin
         if reset = '1' then
             done        <= '0';
-            --iterator_Cr <= (others => '0');
-            --iterator_Ci <= (others => '0');
             iterations  <= 0;
         elsif rising_edge(clk) then
             if start = '1' then
-                --iterator_Cr <= Cr;
-                --iterator_Ci <= Ci;
                 done        <= '0';
             else
                 if iterator_done_out = '1' then
                     -- stop
                     done       <= '1';
                     iterations <= iterator_iterations_out;
-                else
-                    -- continue
                 end if;
             end if;
         end if;

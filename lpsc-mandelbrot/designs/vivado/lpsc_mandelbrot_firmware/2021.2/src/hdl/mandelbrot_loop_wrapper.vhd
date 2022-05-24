@@ -100,7 +100,7 @@ architecture Behavioral of mandelbrot_loop_wrapper is
         );
     end component ComplexValueGenerator;
 
-    type StateMachine is (IDLE, RUNNING, DONE, WAIT_FOR_NEXT, LOOP_INIT, WRITE_MEMORY);
+    type StateMachine is (IDLE, RUNNING, WAIT_FOR_NEXT, LOOP_INIT, WRITE_MEMORY);
     signal State           : StateMachine;
     -- ComplexValueGenerator signals
     signal next_value      : std_logic;

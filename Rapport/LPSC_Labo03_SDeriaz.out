@@ -1,0 +1,26 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [2][-]{subsection.1.1}{Couleurs}{section.1}% 2
+\BOOKMARK [1][-]{section.2}{Analyse}{}% 3
+\BOOKMARK [2][-]{subsection.2.1}{Virgule fixe}{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.2}{Organisation}{section.2}% 5
+\BOOKMARK [3][-]{subsubsection.2.2.1}{Bouclage}{subsection.2.2}% 6
+\BOOKMARK [3][-]{subsubsection.2.2.2}{Pipeline}{subsection.2.2}% 7
+\BOOKMARK [2][-]{subsection.2.3}{Calculs sur Python}{section.2}% 8
+\BOOKMARK [2][-]{subsection.2.4}{Couleurs}{section.2}% 9
+\BOOKMARK [1][-]{section.3}{R\351alisation}{}% 10
+\BOOKMARK [2][-]{subsection.3.1}{Organisation}{section.3}% 11
+\BOOKMARK [2][-]{subsection.3.2}{It\351ration}{section.3}% 12
+\BOOKMARK [2][-]{subsection.3.3}{Loop}{section.3}% 13
+\BOOKMARK [2][-]{subsection.3.4}{Loop wrapper}{section.3}% 14
+\BOOKMARK [2][-]{subsection.3.5}{Pipeline}{section.3}% 15
+\BOOKMARK [2][-]{subsection.3.6}{Pipeline wrapper}{section.3}% 16
+\BOOKMARK [3][-]{subsubsection.3.6.1}{Zoom}{subsection.3.6}% 17
+\BOOKMARK [2][-]{subsection.3.7}{R\351solution des couleurs}{section.3}% 18
+\BOOKMARK [2][-]{subsection.3.8}{Fr\351quence}{section.3}% 19
+\BOOKMARK [1][-]{section.4}{Simulations}{}% 20
+\BOOKMARK [2][-]{subsection.4.1}{Testbench de l'it\351rateur}{section.4}% 21
+\BOOKMARK [2][-]{subsection.4.2}{Testbench du loop}{section.4}% 22
+\BOOKMARK [1][-]{section.5}{Conclusion}{}% 23
+\BOOKMARK [2][-]{subsection.5.1}{Utilisation du FPGA}{section.5}% 24
+\BOOKMARK [3][-]{subsubsection.5.1.1}{M\351thode loop}{subsection.5.1}% 25
+\BOOKMARK [3][-]{subsubsection.5.1.2}{M\351thode pipeline}{subsection.5.1}% 26

@@ -70,11 +70,6 @@ architecture Behavioral of mandelbrot_pipeline is
         );
     end component;
 
-    -- Input
-    --signal iterator_done_in              : std_logic;
-    --signal iterator_Cr_in          : signed (m + n - 1 downto 0);
-    --signal iterator_Ci_in          : signed (m + n - 1 downto 0);
-
     -- Output
     signal iterator_done_out       : std_logic;
     signal iterator_iterations_out : integer range 0 to max_iter;
@@ -96,6 +91,7 @@ begin
 
     GEN_REG :
     for I in 0 to max_iter - 1 generate
+        -- First iterator (input of the pipeline)
         iterator_first_if : if I = 0 generate
             iterator_first : mandelbrot_iteration
             generic map(
@@ -119,7 +115,7 @@ begin
                 done_out       => iterator_done_out_array(0)
             );
         end generate;
-
+        -- "Middle" iterators
         iterator_if : if I /= max_iter - 1 and I /= 0 generate
             iterator : mandelbrot_iteration
             generic map(
@@ -145,7 +141,7 @@ begin
                 done_out       => iterator_done_out_array(I)
             );
         end generate;
-
+        -- Last iterator (output)
         iterator_last_if : if I = max_iter - 1 generate
             iterator_last : mandelbrot_iteration
             generic map(
@@ -173,20 +169,23 @@ begin
         end generate;
 
     end generate GEN_REG;
-    iterations <= iterator_iterations_out;
-    valid      <= '1' when iterator_iterations_out > 0 else
-        '0';
 
+    -- Pipeline input
     iterator_Cr_array(0) <= Cr when run = '1' else
     (others => '0');
     iterator_Ci_array(0) <= Ci when run = '1' else
     (others => '0');
+    -- Pipeline output
+    iterations <= iterator_iterations_out;
+    valid      <= '1' when iterator_iterations_out > 0 else
+        '0';
 
     process (clk, reset)
     begin
         if reset = '1' then
             -- Nothing to reset
         elsif rising_edge(clk) then
+            -- Shift the Cr and Ci (since they aren't in the iterator) to account for the pipeline delay
             for I in 1 to max_iter - 2 loop
                 iterator_Cr_array(I) <= iterator_Cr_array(I - 1);
                 iterator_Ci_array(I) <= iterator_Ci_array(I - 1);
