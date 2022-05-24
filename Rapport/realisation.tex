@@ -17,8 +17,8 @@ Les fichiers \verb!mandelbrot_loop.vhd! et \verb!mandelbrot_pipeline.vhd! se cha
 \subsection{Itération}
 L'itérateur (\verb!mandebrot_iteration.vhd!) est basé sur un process synchrone qui réalise tous les calculs en un coup d'horloge. Il est primordial d'avoir des registres sur toutes les sorties afin d'utiliser les itérateurs dans le pipeline ainsi que dans le loop.
 \subsection{Loop}
-Pour boucler, il suffit simplement de relier les sorties de l'oblitérateur sur les entrées (car elles sont équipées de registres). Lorsqu'un signal \verb!start! est actif, les entrées sont remplacées par des valeurs initiales.\\
-Il existe aussi un process synchrone pour gérer les sorties du loop(\verb!done! et \verb!iterations!). Le process synchrone désactive la sortie \verb!done! lorsque le calcul est lancé et la ré-active lorsque le calcul est terminé, il va aussi mettre à jour la valeur de \verb!iterations!.
+Pour boucler, il suffit simplement de relier les sorties de l'itérateur sur les entrées (car elles sont équipées de registres). Lorsqu'un signal \verb!start! est actif, les entrées sont remplacées par des valeurs initiales.\\
+Il existe aussi un process synchrone pour gérer les sorties du loop (\verb!done! et \verb!iterations!). Le process synchrone désactive la sortie \verb!done! lorsque le calcul est lancé et la ré-active lorsque le calcul est terminé, il va aussi mettre à jour la valeur de \verb!iterations!.
 \subsection{Loop wrapper}
 Le loop wrapper va utiliser le fichier \verb!ComplexValueGenerator.vhd! pour générer les nombres complexes et les transmettre au loop. Lorsqu'un pixel est calculé, le prochain est envoyé. Le loop wrapper est basé sur une machine d'état doit voici le graph
 \begin{figure}[H]
@@ -39,7 +39,7 @@ Le zoom représente une grosse partie du process synchrone du pipeline wrapper m
 \subsection{Résolution des couleurs}
 Afin d'obtenir une meilleure résolution de couleurs, le nombre d'itérations a été stocké dans la mémoire (au lieu de la couleur de chaque pixel) et la LUT est appliquée à la sortie de la mémoire (côté HDMI), ceci permet de diminuer le nombre de BRAM utilisés (7 bits stockés au lieu de 9) tout en améliorant la fidélité des couleurs.
 \subsection{Fréquence}
-Avec l'implémentation du pipeline, il existait un "worst negative slack" de \SI{-8}{\nano\second} avec une fréquence de \SI{100}{\mega\hertz}. Comme le pipeline est capable de générer l'image à raison de 1 pixel par coup d'horloge, ceci donne un framerate de environ 163 images par seconde ce qui est inutilement important. La fréquence a donc été diminuée à \SI{50}{\mega\hertz} pour respecter les contraintes de timing tout en ayant une fréquence de rafraichissement largement confortable de 81 images par seconde.
+Avec l'implémentation du pipeline, il existait un "worst negative slack" de \SI{-8}{\nano\second} avec une fréquence de \SI{100}{\mega\hertz}. Comme le pipeline est capable de générer l'image à raison de 1 pixel par coup d'horloge, ceci donne un framerate de environ 163 images par seconde ce qui est inutilement important. La fréquence a donc été diminuée à \SI{50}{\mega\hertz} pour respecter les contraintes de timing tout en ayant une fréquence de rafraichissement largement confortable de 82 images par seconde.
 
 
 

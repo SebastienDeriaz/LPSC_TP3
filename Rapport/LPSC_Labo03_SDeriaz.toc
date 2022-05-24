@@ -1,4 +1,4 @@
-\babel@toc {french}{}
+\babel@toc {french}{}\relax 
 \contentsline {section}{\numberline {1}Introduction}{3}{section.1}%
 \contentsline {subsection}{\numberline {1.1}Couleurs}{3}{subsection.1.1}%
 \contentsline {section}{\numberline {2}Analyse}{4}{section.2}%

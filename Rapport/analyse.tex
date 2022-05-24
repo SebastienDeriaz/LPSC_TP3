@@ -26,7 +26,7 @@ Ce bloc sera ensuite réutilisé dans deux versions du programme
 \item Pipeline, 100 itérateurs (le nombre maximal d'itérations) sont reliés les uns après les autres ce qui permet de calculer un pixel par coup d'horloge
 \end{enumerate}
 \subsubsection{Bouclage}
-Les sorties de l'itérateur sont reliées sur les entrées à l'exception du premier itérateur (qui prend les entrées pour le point à calculer) et du dernier (qui fourni le nombre d'itérations en sortie)
+Un seul itérateur est utilisé et prend initialement les entrées du système puis est bouclé sur lui-même jusqu'au signal \verb!done!
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.75,page=2]{../Documents/Schemas-crop.pdf}
