@@ -1,0 +1,27 @@
+\babel@toc {french}{}
+\contentsline {section}{\numberline {1}Introduction}{3}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Couleurs}{3}{subsection.1.1}%
+\contentsline {section}{\numberline {2}Analyse}{4}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Virgule fixe}{4}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Organisation}{4}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}Bouclage}{4}{subsubsection.2.2.1}%
+\contentsline {subsubsection}{\numberline {2.2.2}Pipeline}{5}{subsubsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.3}Calculs sur Python}{5}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Couleurs}{6}{subsection.2.4}%
+\contentsline {section}{\numberline {3}Réalisation}{8}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Organisation}{8}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Itération}{8}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Loop}{8}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Loop wrapper}{9}{subsection.3.4}%
+\contentsline {subsection}{\numberline {3.5}Pipeline}{9}{subsection.3.5}%
+\contentsline {subsection}{\numberline {3.6}Pipeline wrapper}{9}{subsection.3.6}%
+\contentsline {subsubsection}{\numberline {3.6.1}Zoom}{10}{subsubsection.3.6.1}%
+\contentsline {subsection}{\numberline {3.7}Résolution des couleurs}{10}{subsection.3.7}%
+\contentsline {subsection}{\numberline {3.8}Fréquence}{10}{subsection.3.8}%
+\contentsline {section}{\numberline {4}Simulations}{11}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Testbench de l'itérateur}{11}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Testbench du loop}{11}{subsection.4.2}%
+\contentsline {section}{\numberline {5}Conclusion}{12}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Utilisation du FPGA}{12}{subsection.5.1}%
+\contentsline {subsubsection}{\numberline {5.1.1}Méthode loop}{12}{subsubsection.5.1.1}%
+\contentsline {subsubsection}{\numberline {5.1.2}Méthode pipeline}{12}{subsubsection.5.1.2}%

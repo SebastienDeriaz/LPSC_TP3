@@ -26,8 +26,8 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.NUMERIC_STD.all;
 
-library work;
-use work.mandelbrot_colors.all;
+--library work;
+--use work.mandelbrot_colors.all;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
@@ -100,7 +100,7 @@ architecture Behavioral of mandelbrot_loop_wrapper is
         );
     end component ComplexValueGenerator;
 
-    type StateMachine is (IDLE, RUNNING, DONE, WAIT_FOR_NEXT, LOOP_INIT, WRITE_MEMORY);
+    type StateMachine is (IDLE, RUNNING, WAIT_FOR_NEXT, LOOP_INIT, WRITE_MEMORY);
     signal State           : StateMachine;
     -- ComplexValueGenerator signals
     signal next_value      : std_logic;

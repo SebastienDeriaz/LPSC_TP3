@@ -28,9 +28,13 @@ use unisim.vcomponents.all;
 
 library lpsc_lib;
 use lpsc_lib.lpsc_hdmi_interface_pkg.all;
+--use lpsc_lib.colors_LUT.all;
+
+--library xil_defaultlib;
+--use xil_defaultlib.colors_LUT.all;
 
 library work;
-use work.mandelbrot_colors.all;
+use work.colors_LUT.all;
 
 entity lpsc_mandelbrot_firmware is
 
@@ -202,7 +206,7 @@ architecture arch of lpsc_mandelbrot_firmware is
     -- --
     -- attribute keep                                    : string;
     -- attribute keep of DebugFlagColor1RegPortxDP       : signal is "true";
-    component mandelbrot_loop_wrapper is
+    component mandelbrot_pipeline_wrapper is
         generic (
             SIZE       : integer := 16;   -- Taille en bits de nombre au format virgule fixe
             X_SIZE     : integer := 1024; -- Taille en X (Nombre de pixel) de la fractale à afficher
@@ -219,11 +223,28 @@ architecture arch of lpsc_mandelbrot_firmware is
             memory_address      : out std_logic_vector(2 * SCREEN_RES - 1 downto 0);
             memory_data         : out std_logic_vector(RAM_SIZE - 1 downto 0)
         );
-    end component mandelbrot_loop_wrapper;
+    end component mandelbrot_pipeline_wrapper;
+
+    component mandelbrot_loop_wrapper is
+        generic (
+            SIZE       : integer := 18;   -- Taille en bits de nombre au format virgule fixe
+            X_SIZE     : integer := 1024; -- Taille en X (Nombre de pixel) de la fractale à afficher
+            Y_SIZE     : integer := 600;  -- Taille en Y (Nombre de pixel) de la fractale à afficher
+            SCREEN_RES : integer := 10;   -- Nombre de bit pour les vecteurs X et Y de la position du pixel
+            RAM_SIZE   : integer := 18);
+        port (
+            clk                 : in std_logic;
+            reset               : in std_logic;
+            -- In
+            run                 : in std_logic;
+            -- Out
+            memory_write_enable : out std_logic;
+            memory_address      : out std_logic_vector(2 * SCREEN_RES - 1 downto 0);
+            memory_data         : out std_logic_vector(RAM_SIZE - 1 downto 0)
+        );
+    end component;
 
     signal BramVideoMemoryWriteEnable : std_logic;
-
-    signal test_signal                : std_logic_vector(6 downto 0);
 
 begin
 
@@ -266,7 +287,7 @@ begin
     VgaHdmiCDxB : block is
     begin -- block VgaHdmiCDxB
 
-        DataBramMV2HdmixD <= 
+        DataBramMV2HdmixD <=
             R(to_integer(unsigned(BramVideoMemoryReadDataxD))) &
             G(to_integer(unsigned(BramVideoMemoryReadDataxD))) &
             B(to_integer(unsigned(BramVideoMemoryReadDataxD)));
@@ -351,8 +372,12 @@ begin
             reset           => ResetxR,
             PllLockedxSO    => PllLockedxS,
             ClkSys100MhzxCI => ClkSys100MhzBufgxC);
-
-        mandelbrot_loop_wrapper_inst : mandelbrot_loop_wrapper
+        
+        -- =============================
+        -- UNCOMMENT FOR PIPELINE METHOD
+        -- =============================
+        
+        mandelbrot_pipeline_wrapper_inst : mandelbrot_pipeline_wrapper
         generic map(
             SIZE       => 18,
             X_SIZE     => 1024,
@@ -370,6 +395,29 @@ begin
             memory_address      => BramVideoMemoryWriteAddrxD,
             memory_data         => BramVideoMemoryWriteDataxD
         );
+
+        -- =============================
+        -- UNCOMMENT FOR LOOP METHOD
+        -- =============================
+        --
+        -- mandelbrot_loop_wrapper_inst : mandelbrot_loop_wrapper
+        -- generic map(
+        --     SIZE       => 18,
+        --     X_SIZE     => 1024,
+        --     Y_SIZE     => 600,
+        --     SCREEN_RES => 10,
+        --     RAM_SIZE   => C_BRAM_VIDEO_MEMORY_DATA_SIZE
+        -- )
+        -- port map(
+        --     clk                 => ClkMandelxC,
+        --     reset               => PllNotLockedxS,
+        --     -- In
+        --     run                 => '1',
+        --     -- Out
+        --     memory_write_enable => BramVideoMemoryWriteEnable,
+        --     memory_address      => BramVideoMemoryWriteAddrxD,
+        --     memory_data         => BramVideoMemoryWriteDataxD
+        -- );
 
     end block FpgaUserCDxB;
 

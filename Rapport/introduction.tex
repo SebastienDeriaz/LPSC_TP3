@@ -1,0 +1,20 @@
+\documentclass[LPSC_Labo03_SDeriaz]{subfiles}
+
+
+\begin{document}
+\section{Introduction}
+Le but de se laboratoire est d'implémenter un affichage de la fractale de Mandelbrot sur FPGA.
+\begin{figure}[H]
+\centering
+\includegraphics[width=10cm]{mandelbrot.png}
+\caption{Fractale de Mandelbrot}
+\end{figure}
+Pour obtenir la fractale, il faut évaluer l'équation \ref{eq_mandelbrot} avec comme point de départ $C$ (dans le plan complexe).
+\begin{equation}
+z_{k+1}=z_{k}^2+C
+\label{eq_mandelbrot}
+\end{equation}
+Après chaque itération, on évalue si la norme euclidienne du nombre complexe $z_{k+1}$ dépasse un rayon donné $R=2$. Le nombre d'itérations réalisées jusqu'ici constitue la valeur associée à chaque pixel.
+\subsection{Couleurs}
+Pour passer d'un nombre d'itérations (de 0 à 100), on utilise une lookup table pour affecter une couleur à chaque valeur d'itération (et rendre la fractale plus intéressante à regarder)
+\end{document}

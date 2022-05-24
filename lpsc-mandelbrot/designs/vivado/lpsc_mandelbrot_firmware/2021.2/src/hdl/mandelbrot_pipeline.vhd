@@ -24,7 +24,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.NUMERIC_STD.all;
-entity mandelbrot_loop is
+entity mandelbrot_pipeline is
     generic (
         max_iter : integer                    := 100;
         m        : integer                    := 3;
@@ -37,14 +37,14 @@ entity mandelbrot_loop is
         -- In
         Cr         : in signed(m + n - 1 downto 0);
         Ci         : in signed(m + n - 1 downto 0);
-        start      : in std_logic;
+        run        : in std_logic;
         -- Out
-        done       : out std_logic;
+        valid      : out std_logic;
         iterations : out integer range 0 to max_iter
     );
-end mandelbrot_loop;
+end mandelbrot_pipeline;
 
-architecture Behavioral of mandelbrot_loop is
+architecture Behavioral of mandelbrot_pipeline is
     component mandelbrot_iteration is
         generic (
             max_iter : integer := 100; -- Max number of iterations
@@ -70,89 +70,126 @@ architecture Behavioral of mandelbrot_loop is
         );
     end component;
 
-    signal iterator_done_in        : std_logic;
-    signal iterator_Cr             : signed (m + n - 1 downto 0);
-    signal iterator_Ci             : signed (m + n - 1 downto 0);
-    signal iterator_Zr_previous    : signed (m + n - 1 downto 0);
-    signal iterator_Zi_previous    : signed (m + n - 1 downto 0);
-    signal iterator_iterations_in  : integer range 0 to max_iter;
-    signal iterator_Zr_next        : signed(m + n - 1 downto 0);
-    signal iterator_Zi_next        : signed(m + n - 1 downto 0);
-    signal iterator_iterations_out : integer range 0 to max_iter;
+    -- Output
     signal iterator_done_out       : std_logic;
+    signal iterator_iterations_out : integer range 0 to max_iter;
+    -- Ignore Zr_next and Zi_next
 
+    -- Arrays (connect instances together)
+    type std_logic_array is array(0 to max_iter - 1) of std_logic;
+    type signed_array is array(0 to max_iter - 2) of signed (m + n - 1 downto 0);
+    type integer_array is array(0 to max_iter - 2) of integer range 0 to max_iter;
+
+    signal done_in_array                 : std_logic_array;
+    signal iterator_Cr_array             : signed_array;
+    signal iterator_Ci_array             : signed_array;
+    signal iterator_Zr_next_array        : signed_array;
+    signal iterator_Zi_next_array        : signed_array;
+    signal iterator_iterations_out_array : integer_array;
+    signal iterator_done_out_array       : std_logic_array;
 begin
-    iterator_iterations_in <= 0 when start = '1' else
-        iterator_iterations_out;
-    iterator_Zr_previous <= (others => '0') when start = '1' else
-        iterator_Zr_next;
-    iterator_Zi_previous <= (others => '0') when start = '1' else
-        iterator_Zi_next;
-    iterator_done_in <= '0' when start = '1' else
-        iterator_done_out;
-    iterator_Cr <= Cr;
-    iterator_Ci <= Ci;
+
     GEN_REG :
     for I in 0 to max_iter - 1 generate
-        if I = 0
-            if I = 0 generate
-                iterator : mandelbrot_iteration
-                generic map(
-                    max_iter => max_iter,
-                    m        => m,
-                    n        => n
-                )
-                port map(
-                    clk            => clk,
-                    reset          => reset,
-                    done_in        => iterator_done_in,
-                    Cr             => iterator_Cr,
-                    Ci             => iterator_Ci,
-                    Zr_previous    => iterator_Zr_previous,
-                    Zi_previous    => iterator_Zi_previous,
-                    R              => R,
-                    iterations_in  => iterator_iterations_in,
-                    Zr_next        => iterator_Zr_next,
-                    Zi_next        => iterator_Zi_next,
-                    iterations_out => iterator_iterations_out,
-                    done_out       => iterator_done_out
-                );
-            end generate;
+        -- First iterator (input of the pipeline)
+        iterator_first_if : if I = 0 generate
+            iterator_first : mandelbrot_iteration
+            generic map(
+                max_iter => max_iter,
+                m        => m,
+                n        => n
+            )
+            port map(
+                clk            => clk,
+                reset          => reset,
+                done_in        => '0',
+                Cr             => iterator_Cr_array(0),
+                Ci             => iterator_Ci_array(0),
+                Zr_previous => (others => '0'),
+                Zi_previous => (others => '0'),
+                R              => R,
+                iterations_in  => 0,
+                Zr_next        => iterator_Zr_next_array(0),
+                Zi_next        => iterator_Zi_next_array(0),
+                iterations_out => iterator_iterations_out_array(0),
+                done_out       => iterator_done_out_array(0)
+            );
+        end generate;
+        -- "Middle" iterators
+        iterator_if : if I /= max_iter - 1 and I /= 0 generate
+            iterator : mandelbrot_iteration
+            generic map(
+                max_iter => max_iter,
+                m        => m,
+                n        => n
+            )
+            port map(
+                clk            => clk,
+                reset          => reset,
+                -- Inputs
+                done_in        => iterator_done_out_array(I - 1),
+                Cr             => iterator_Cr_array(I - 1),
+                Ci             => iterator_Ci_array(I - 1),
+                Zr_previous    => iterator_Zr_next_array(I - 1),
+                Zi_previous    => iterator_Zi_next_array(I - 1),
+                R              => R,
+                iterations_in  => iterator_iterations_out_array(I - 1),
+                -- Outputs
+                Zr_next        => iterator_Zr_next_array(I),
+                Zi_next        => iterator_Zi_next_array(I),
+                iterations_out => iterator_iterations_out_array(I),
+                done_out       => iterator_done_out_array(I)
+            );
+        end generate;
+        -- Last iterator (output)
+        iterator_last_if : if I = max_iter - 1 generate
+            iterator_last : mandelbrot_iteration
+            generic map(
+                max_iter => max_iter,
+                m        => m,
+                n        => n
+            )
+            port map(
+                clk            => clk,
+                reset          => reset,
+                -- Inputs
+                done_in        => iterator_done_out_array(I - 1),
+                Cr             => iterator_Cr_array(I - 1),
+                Ci             => iterator_Ci_array(I - 1),
+                Zr_previous    => iterator_Zr_next_array(I - 1),
+                Zi_previous    => iterator_Zi_next_array(I - 1),
+                R              => R,
+                iterations_in  => iterator_iterations_out_array(I - 1),
+                -- Outputs
+                Zr_next        => open,
+                Zi_next        => open,
+                iterations_out => iterator_iterations_out,
+                done_out       => iterator_done_out
+            );
+        end generate;
 
-            if I = max_iter -1 generate
+    end generate GEN_REG;
 
+    -- Pipeline input
+    iterator_Cr_array(0) <= Cr when run = '1' else
+    (others => '0');
+    iterator_Ci_array(0) <= Ci when run = '1' else
+    (others => '0');
+    -- Pipeline output
+    iterations <= iterator_iterations_out;
+    valid      <= '1' when iterator_iterations_out > 0 else
+        '0';
 
-
-            end generate;
-
-
-            if I /= max_iter-1 and I /= 0 generate
-
-
-            end generate;
-                
-        end generate GEN_REG;
-        process (clk, reset)
-        begin
-            if reset = '1' then
-                done       <= '0';
-                --iterator_Cr <= (others => '0');
-                --iterator_Ci <= (others => '0');
-                iterations <= 0;
-            elsif rising_edge(clk) then
-                if start = '1' then
-                    --iterator_Cr <= Cr;
-                    --iterator_Ci <= Ci;
-                    done <= '0';
-                else
-                    if iterator_done_out = '1' then
-                        -- stop
-                        done       <= '1';
-                        iterations <= iterator_iterations_out;
-                    else
-                        -- continue
-                    end if;
-                end if;
-            end if;
-        end process;
-    end Behavioral;
+    process (clk, reset)
+    begin
+        if reset = '1' then
+            -- Nothing to reset
+        elsif rising_edge(clk) then
+            -- Shift the Cr and Ci (since they aren't in the iterator) to account for the pipeline delay
+            for I in 1 to max_iter - 2 loop
+                iterator_Cr_array(I) <= iterator_Cr_array(I - 1);
+                iterator_Ci_array(I) <= iterator_Ci_array(I - 1);
+            end loop;
+        end if;
+    end process;
+end Behavioral;

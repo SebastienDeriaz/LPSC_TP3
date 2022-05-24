@@ -1,0 +1,123 @@
+\documentclass[]{article}
+
+
+\usepackage[french]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage[margin=2.5cm,includehead]{geometry}
+\usepackage{lastpage}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{subfiles}
+\usepackage[bottom]{footmisc}
+\usepackage{float}
+\usepackage{epsfig}
+%\usepackage{amsmath}
+\usepackage{siunitx}
+\usepackage{mathtools}
+\usepackage{tcolorbox}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black
+}
+
+\DeclareMathOperator{\Div}{div}
+\DeclareMathOperator{\Rot}{rot}
+\DeclareUnicodeCharacter{2009}{\,} 
+
+\def\screenshotWidth{0.9}
+
+
+% Settings
+\newcommand{\Author}{Sébastien Deriaz}
+\newcommand{\professor}{Fabien Vannel}
+\newcommand{\assistant}{Joachim Schmidt}
+\newcommand{\cours}{Logique programmable pour systèmes complexes et performants (LPSC)}
+\newcommand{\titre}{Laboratoire Mandelbrot}
+
+\newcommand{\qbox}[1]{\begin{tcolorbox}\emph{#1}\end{tcolorbox}}
+
+%Figure
+\newcommand{\figc}[3]{%
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=#1\textwidth]{Figure/#2.png}
+    \caption[caption]{#3}
+    \label{fig:#2}
+  \end{figure}}
+  
+\def\doubleunderline#1{\underline{\underline{#1}}}
+
+\DeclareUnicodeCharacter{202F}{\,}
+
+\usepackage[outdir=./]{epstopdf}
+
+% Other packages
+
+% Page config
+\fancyhead[L]{\includegraphics[height=8mm]{mse-full-cropped.pdf}}
+
+\pagestyle{fancy}
+\fancyfoot[C]{\thepage\ / \pageref{LastPage}}
+
+\begin{document}
+\thispagestyle{empty}
+
+\begin{center}
+\includegraphics[height=8mm]{mse-full-cropped.pdf}
+\hfill
+\includegraphics[height=8mm]{HES-SO_logo_Pantone.pdf}
+\end{center}
+\vfill
+\begin{center}
+\Huge \titre\\
+\end{center}
+\begin{center}
+\large
+\begin{tabular}{lp{7.5cm}}
+Département : & EIE\\
+Unité d'enseignement : & \cours
+\end{tabular}
+\end{center}
+\vfill
+\begin{center}
+\large
+\begin{tabular}{ll}
+\Large Auteur & \Large \Author\\
+Professeur & \professor\\ 
+Assistant & \assistant\\
+Date & \today
+\end{tabular}
+\end{center}
+\vfill
+
+\pagebreak
+\tableofcontents
+\pagebreak
+\subfile{introduction}
+\pagebreak
+\subfile{analyse}
+\pagebreak
+\subfile{realisation}
+\pagebreak
+\subfile{simulations}
+\pagebreak
+\subfile{conclusion}
+
+\begin{flushright}
+\begin{tabular}{r m{3cm}}
+Lausanne, le \today & \\
+\Author & \\
+\end{tabular}
+\end{flushright}
+
+\pagebreak
+
+\end{document}

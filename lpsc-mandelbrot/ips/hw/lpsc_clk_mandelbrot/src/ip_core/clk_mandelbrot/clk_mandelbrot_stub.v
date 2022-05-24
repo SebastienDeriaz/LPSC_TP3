@@ -1,10 +1,10 @@
 // Copyright 1986-2021 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
-// Tool Version: Vivado v.2021.2 (lin64) Build 3367213 Tue Oct 19 02:47:39 MDT 2021
-// Date        : Mon Feb 28 10:45:59 2022
-// Host        : debian-xps15 running 64-bit Debian GNU/Linux 11 (bullseye)
+// Tool Version: Vivado v.2021.2 (win64) Build 3367213 Tue Oct 19 02:48:09 MDT 2021
+// Date        : Sun May 22 17:34:14 2022
+// Host        : PCSebastien running 64-bit major release  (build 9200)
 // Command     : write_verilog -force -mode synth_stub
-//               /home/jo/Documents/Hepia/cours/lpsc/lpsc-mandelbrot/ips/hw/lpsc_clk_mandelbrot/src/ip_core/clk_mandelbrot/clk_mandelbrot_stub.v
+//               y:/lpsc-mandelbrot/ips/hw/lpsc_clk_mandelbrot/src/ip_core/clk_mandelbrot/clk_mandelbrot_stub.v
 // Design      : clk_mandelbrot
 // Purpose     : Stub declaration of top-level module interface
 // Device      : xc7a200tsbg484-1
